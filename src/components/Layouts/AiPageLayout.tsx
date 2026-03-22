@@ -2,7 +2,7 @@ import Navbar from "../Fragments/Navbar";
 import Footer from "../Fragments/Footer";
 import CustomCursor from "../Elements/Cursor";
 import AiHeroSection from "../Sections/AiPage/AiHeroSection";
-import ProblemSection from "../Sections/LandingPage/ProblemSection";
+import AiStudioSection from "../Sections/AiPage/AiStudioSection";
 import bgLandingPage from "../../assets/bg-landingpage.svg";
 
 const AiPageLayout = () => {
@@ -18,8 +18,8 @@ const AiPageLayout = () => {
             />
 
             <main className="relative z-10">
-                <AiHeroSection />   
-                <ProblemSection />
+                <AiHeroSection />  
+                <AiStudioSection /> 
                 <Footer />
             </main>
         </div>
