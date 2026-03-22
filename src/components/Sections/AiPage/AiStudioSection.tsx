@@ -9,11 +9,20 @@ const AiStudioSection = () => {
     const [selectedStyle, setSelectedStyle] = useState('Modern');
     const [isStyleDropdownOpen, setIsStyleDropdownOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [captionText, setCaptionText] = useState(`"DISKON 20% UNTUK KOLEKSI TERBARU! 📢\n\nDapatkan Sepatu Kets Premium Dengan Harga Spesial Hanya Minggu Ini. Stok Terbatas, Jangan Sampai Kehabisan Ukuranmu! Klik Link Di Bio Untuk Order Sekarang Sebelum Promo Berakhir. ✨\n\n#PromoSepatu #DiskonGila #AiGency #SepatuKets #JualSepatu"`);
+    const [captionText, setCaptionText] = useState("");
     
     // Platform & Schedule State
     const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['Instagram']);
     const [isPlatformDropdownOpen, setIsPlatformDropdownOpen] = useState(false);
+    
+    // AI Generation State (Mock API)
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [loadingMessage, setLoadingMessage] = useState('');
+    const [generatedPoster, setGeneratedPoster] = useState<string | null>(null);
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const sectionRef = useRef<HTMLDivElement>(null);
+    const instructionRef = useRef<HTMLTextAreaElement>(null);
     
     const togglePlatform = (platform: string) => {
         setSelectedPlatforms(prev => 
@@ -23,8 +32,54 @@ const AiStudioSection = () => {
         );
     };
     
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const sectionRef = useRef<HTMLDivElement>(null);
+    const handleGenerate = async () => {
+        if (!selectedImage) {
+            alert("Silakan upload gambar produk terlebih dahulu untuk memulai keajaiban AI!");
+            return;
+        }
+
+        setIsGenerating(true);
+        try {
+            // STEP 1: Simulasi POST request ke API AI
+            setLoadingMessage("Menganalisa objek produk...");
+            console.log("POST /api/generate-poster", {
+                image: selectedImage,
+                style: selectedStyle,
+                instruction: instructionRef.current?.value || "",
+                platforms: selectedPlatforms
+            });
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            // STEP 2: Simulasi Polling process (AI sedang bekerja)
+            setLoadingMessage("Merancang komposisi visual...");
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            setLoadingMessage("Merender efek pencahayaan...");
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            setLoadingMessage("Menulis caption marketing yang menjual...");
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            // STEP 3: API selesai, ambil hasil JSON dari GET status endpoint
+            const mockApiResult = {
+                status: "success",
+                data: {
+                    imageUrl: posterPreview, // DUMMY: Pakai ilustrasi statis dari mockup sebagai hasil
+                    caption: "🚀 BOOM! Tingkatkan Gayamu Dengan Sepatu Kets Edisi Terbatas Ini!\n\nDidesain khusus untuk kamu yang mengutamakan kenyamanan tanpa mengorbankan style. Cocok untuk lari pagi, atau sekadar tampil beda.\n\n🔥 Stok menipis, amankan size kamu sekarang sebelum kehabisan! Klik link di bio untuk order via WhatsApp.\n\n#SepatuKece #SneakersLokal #OOTDIndo"
+                }
+            };
+
+            setGeneratedPoster(mockApiResult.data.imageUrl);
+            setCaptionText(mockApiResult.data.caption);
+
+        } catch (error) {
+            console.error("Error generation:", error);
+            alert("Terjadi kesalahan saat memproses AI.");
+        } finally {
+            setIsGenerating(false);
+            setLoadingMessage("");
+        }
+    };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -164,6 +219,7 @@ const AiStudioSection = () => {
                                     </div>
                                 </div>
                                 <textarea 
+                                    ref={instructionRef}
                                     className="w-full flex-1 resize-none text-xs md:text-sm font-medium text-dark bg-transparent outline-hidden placeholder:text-gray-400"
                                     defaultValue="Buatkan Poster Produk Sepatu Kets Di Atas Podium Melingkar Yang Mewah. Berikan Efek Dua Lampu Sorot (Spotlight) Dari Atas Yang Menyoroti Produk Dengan Tajam."
                                 ></textarea>
@@ -172,8 +228,22 @@ const AiStudioSection = () => {
 
                         {/* Tombol Selanjutnya */}
                         <div className="mt-auto pt-8">
-                            <button className="w-full rounded-full bg-[#F98C23] py-3 md:py-3.5 text-base md:text-lg font-bold text-white shadow-md transition-all duration-300 hover:bg-[#e07a1b] hover:-translate-y-1 hover:shadow-lg focus:outline-hidden">
-                                Generate
+                            <button 
+                                onClick={handleGenerate}
+                                disabled={isGenerating}
+                                className={`w-full rounded-full py-3 md:py-3.5 text-base md:text-lg font-bold text-white shadow-md transition-all duration-300 focus:outline-hidden flex items-center justify-center gap-2 ${isGenerating ? 'bg-gray-400 cursor-not-allowed shadow-none transform-none' : 'bg-[#F98C23] hover:bg-[#e07a1b] hover:-translate-y-1 hover:shadow-lg'}`}
+                            >
+                                {isGenerating ? (
+                                    <>
+                                        <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Memproses...
+                                    </>
+                                ) : (
+                                    "Generate"
+                                )}
                             </button>
                         </div>
                     </div>
@@ -196,19 +266,34 @@ const AiStudioSection = () => {
                             {/* Kiri: Preview Poster */}
                             <div className="flex flex-col self-start w-full rounded-2xl border border-primary p-4 overflow-hidden bg-primary-light/10">
                                 <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-3 shrink-0">
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
-                                                <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>
-                                            </div>
-                                            <span className="rounded-full bg-primary px-3 py-0.5 text-[10px] md:text-xs font-bold text-white">Foto</span>
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
+                                            <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>
                                         </div>
-                                        <svg className="w-5 h-5 text-primary cursor-pointer hover:opacity-70" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
+                                        <span className="rounded-full bg-primary px-3 py-0.5 text-[10px] md:text-xs font-bold text-white">Foto</span>
                                     </div>
+                                    <svg className="w-5 h-5 text-primary cursor-pointer hover:opacity-70" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
+                                </div>
                                 
                                 {/* Frame Poster (Bentuk Pakem, Anti Potong) */}
                                 <div className="w-full flex-1 relative flex items-center justify-center">
-                                    <div className="relative w-full max-w-sm aspect-3/4  ring-1 ring-gray-900/5 shadow-2xl shadow-primary/20 rounded-xl overflow-hidden flex items-center justify-center p-2">
-                                        <img src={posterPreview} alt="Generated Poster Preview" className="w-full h-full object-contain" />
+                                    <div className="relative w-full max-w-sm aspect-3/4 ring-1 ring-gray-900/5 shadow-2xl shadow-primary/20 rounded-xl overflow-hidden flex items-center justify-center p-2 bg-white">
+                                        {isGenerating ? (
+                                            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-50/90 backdrop-blur-sm p-6 text-center">
+                                                <svg className="w-10 h-10 md:w-12 md:h-12 text-primary/50 mb-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                </svg>
+                                                <span className="text-xs md:text-sm font-bold text-primary animate-pulse">
+                                                    {loadingMessage}
+                                                </span>
+                                            </div>
+                                        ) : generatedPoster ? (
+                                            <img src={generatedPoster} alt="Generated Poster Preview" className="w-full h-full object-contain transition-opacity duration-500" />
+                                        ) : (
+                                            <div className="flex items-center justify-center text-gray-400 w-full h-full text-xs text-center p-4">
+                                                Belum ada poster. Klik Generate untuk memulai.
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -230,11 +315,23 @@ const AiStudioSection = () => {
                                     </div>
                                     
                                     {/* Isi Caption (Editable) */}
-                                    <textarea 
-                                        className="w-full flex-1 resize-none text-[11px] md:text-sm font-medium text-dark leading-relaxed bg-transparent outline-hidden"
-                                        value={captionText}
-                                        onChange={(e) => setCaptionText(e.target.value)}
-                                    />
+                                    {isGenerating ? (
+                                        <div className="w-full flex-1 flex flex-col gap-2.5 animate-pulse mt-2 px-1">
+                                            <div className="h-2.5 md:h-3 bg-gray-200 rounded-full w-3/4"></div>
+                                            <div className="h-2.5 md:h-3 bg-gray-200 rounded-full w-full"></div>
+                                            <div className="h-2.5 md:h-3 bg-gray-200 rounded-full w-full"></div>
+                                            <div className="h-2.5 md:h-3 bg-gray-200 rounded-full w-5/6"></div>
+                                            <div className="h-2.5 md:h-3 bg-gray-200 rounded-full w-1/2 mt-4"></div>
+                                            <div className="h-2.5 md:h-3 bg-gray-200 rounded-full w-2/3 mt-2"></div>
+                                        </div>
+                                    ) : (
+                                        <textarea 
+                                            className="w-full flex-1 resize-none text-[11px] md:text-sm font-medium text-dark leading-relaxed bg-transparent outline-hidden placeholder:text-gray-300"
+                                            value={captionText}
+                                            onChange={(e) => setCaptionText(e.target.value)}
+                                            placeholder="Belum ada caption. Hasil tulisan AI akan muncul di sini..."
+                                        />
+                                    )}
                                 </div>
 
                                 {/* Platform Selector */}
@@ -295,14 +392,14 @@ const AiStudioSection = () => {
                                             <input 
                                                 type="time" 
                                                 defaultValue="12:00" 
-                                                className="w-full h-full text-[11px] md:text-sm font-bold text-dark outline-hidden bg-transparent cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer z-10" 
+                                                className="w-full h-full text-[11px] md:text-sm font-semibold text-dark outline-hidden bg-transparent cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer z-10" 
                                             />
                                             <svg className="w-4 h-4 md:w-5 md:h-5 text-primary absolute right-3 md:right-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                         </div>
                                         <div className="relative flex items-center justify-between w-1/2 rounded-full border border-primary px-3 md:px-4 bg-white cursor-pointer hover:bg-light-bg focus-within:ring-2 focus-within:ring-primary/20 transition-all overflow-hidden h-9 md:h-10">
                                             <input 
                                                 type="date" 
-                                                className="w-full h-full text-[11px] md:text-sm font-bold text-dark outline-hidden bg-transparent cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer z-10" 
+                                                className="w-full h-full text-[11px] md:text-xs font-semibold text-dark outline-hidden bg-transparent cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer z-10" 
                                             />
                                             <svg className="w-4 h-4 md:w-5 md:h-5 text-primary absolute right-3 md:right-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                                         </div>
@@ -315,7 +412,6 @@ const AiStudioSection = () => {
                                         Posting
                                     </div>
                                 </button>
-
                             </div>
                         </div>
                     </div>
