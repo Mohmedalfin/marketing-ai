@@ -220,7 +220,7 @@ const AiStudioSection = () => {
                                 </div>
                                 <textarea 
                                     ref={instructionRef}
-                                    className="w-full flex-1 resize-none text-xs md:text-sm font-medium text-dark bg-transparent outline-hidden placeholder:text-gray-400"
+                                    className="w-full flex-1 resize-none text-xs md:text-sm font-medium text-dark bg-transparent outline-hidden placeholder:text-gray-400 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                                     defaultValue="Buatkan Poster Produk Sepatu Kets Di Atas Podium Melingkar Yang Mewah. Berikan Efek Dua Lampu Sorot (Spotlight) Dari Atas Yang Menyoroti Produk Dengan Tajam."
                                 ></textarea>
                             </div>
@@ -326,7 +326,7 @@ const AiStudioSection = () => {
                                         </div>
                                     ) : (
                                         <textarea 
-                                            className="w-full flex-1 resize-none text-[11px] md:text-sm font-medium text-dark leading-relaxed bg-transparent outline-hidden placeholder:text-gray-300"
+                                            className="w-full flex-1 resize-none text-[11px] md:text-sm font-medium text-dark leading-relaxed bg-transparent outline-hidden placeholder:text-gray-300 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                                             value={captionText}
                                             onChange={(e) => setCaptionText(e.target.value)}
                                             placeholder="Belum ada caption. Hasil tulisan AI akan muncul di sini..."

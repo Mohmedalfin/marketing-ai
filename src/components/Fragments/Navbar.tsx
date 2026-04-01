@@ -110,7 +110,7 @@ export default function Navbar({ variant = "landing" }: { variant?: string }) {
           {variant === "landing" && (
             <>
               <a
-                href="/ai"
+                href="/login"
                 className="text-lg font-semibold text-gray-700 hover:text-[#38C074]"
               >
                 Sign In
@@ -204,7 +204,7 @@ export default function Navbar({ variant = "landing" }: { variant?: string }) {
 
                 <hr />
 
-                <a href="/ai" className="font-semibold text-gray-700">
+                <a href="/login" className="font-semibold text-gray-700">
                   Sign In
                 </a>
 
