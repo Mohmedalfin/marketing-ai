@@ -5,6 +5,7 @@ import LandingPageLayout from './components/Layouts/LandingPageLayout'
 import AiPageLayout from './components/Layouts/AiPageLayout'
 import LoginPageLayout from './components/Layouts/LoginPagelayout'
 import RegisterPageLayout from './components/Layouts/RegisterPagelayout'
+import SchedulePageLayout from './components/Layouts/SchedulePageLayout'
 import ErrorPage from './pages/error'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -28,6 +29,10 @@ export const router = createBrowserRouter([
       {
         path: "/ai",
         element: <AiPageLayout />,
+      },
+      {
+        path: "/schedule",
+        element: <SchedulePageLayout />,
       },
       {
         path: "*",
