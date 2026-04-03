@@ -33,7 +33,7 @@ const DUMMY_DRAFTS: Draft[] = [
         status: 'Draft',
         platform: 'Instagram',
         title: 'Promo Spesial Ramadhan Segera Hadir',
-        description: 'Jangan lewatkan penawaran menarik kami menarik kami. #instagram #Aigency #tamaddan #proots',
+        description: 'Jangan lewatkan penawaran menarik kami menarik kami, Jangan lewatkan penawaran menarik kami menarik kami. #instagram #Aigency #tamaddan #proots',
         date: '2026-03-19',
         time: '15:45',
         image: draftImg1,
@@ -88,7 +88,6 @@ const draftService = {
 
 // =============================================================================
 // 4. HELPER — Format tanggal ISO → tampilan Indonesia
-//    e.g. "2026-03-19" → "19 Maret 2026"
 // =============================================================================
 const formatDisplayDate = (dateStr: string): string => {
     if (!dateStr) return '-';
@@ -221,7 +220,6 @@ export default function DraftListSection() {
                     </div>
                 </div>
 
-                {/* Error Banner */}
                 {error && (
                     <div className="mb-6 rounded-xl bg-red-50 border border-red-200 px-5 py-3 text-sm font-medium text-red-600 flex items-center gap-2">
                         <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -231,7 +229,6 @@ export default function DraftListSection() {
                     </div>
                 )}
 
-                {/* Loading Skeleton */}
                 {isLoading ? (
                     <div className="flex flex-col gap-4">
                         {[1, 2].map((i) => (
@@ -247,14 +244,12 @@ export default function DraftListSection() {
                         ))}
                     </div>
                 ) : filteredDrafts.length === 0 ? (
-                    /* Empty State */
                     <div className="text-center py-16">
                         <p className="text-lg font-bold text-dark/60">
                             {searchQuery ? 'Draft tidak ditemukan.' : 'Belum ada draft.'}
                         </p>
                     </div>
                 ) : (
-                    /* Draft List */
                     <div className="flex flex-col gap-4">
                         {filteredDrafts.map((draft, index) => {
                             const isEditing = editingId === draft.id;
@@ -267,15 +262,12 @@ export default function DraftListSection() {
                                         ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}
                                     `}
                                 >
-                                    {/* Thumbnail */}
                                     <div className="w-full md:w-32 shrink-0 flex items-start justify-center">
                                         <img src={draft.image} alt={draft.title} className="w-full h-auto object-contain" />
                                     </div>
 
-                                    {/* Konten */}
                                     <div className="flex flex-1 flex-col justify-between">
                                         <div>
-                                            {/* Badge + Hapus */}
                                             <div className="mb-2 flex items-center justify-between">
                                                 <div className="flex items-center gap-3">
                                                     <span className="rounded-full bg-[#F98C23] px-4 py-1 text-xs font-bold text-white">
@@ -339,9 +331,20 @@ export default function DraftListSection() {
                                                     </div>
                                                 </div>
                                             ) : (
+                                                // bagian ini
                                                 <>
                                                     <h2 className="text-base font-bold text-dark leading-tight">{draft.title}</h2>
-                                                    <p className="mt-1 text-sm font-medium text-gray-600 leading-relaxed line-clamp-2">{draft.description}</p>
+                                                    <p
+                                                        className="mt-1 text-sm font-medium text-gray-600 leading-relaxed"
+                                                        style={{
+                                                            display: '-webkit-box',
+                                                            WebkitLineClamp: 2,
+                                                            WebkitBoxOrient: 'vertical',
+                                                            overflow: 'hidden',
+                                                        }}
+                                                    >
+                                                        {draft.description}
+                                                    </p>
                                                 </>
                                             )}
                                         </div>
