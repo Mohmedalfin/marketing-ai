@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { registerUser } from "../services/authService";
 import type { RegisterRequest, RegisterResponse } from "../types/auth";
 
@@ -11,6 +11,16 @@ interface UseRegisterReturn {
 export const useRegister = (): UseRegisterReturn => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    if (!error) return;
+
+    const timer = setTimeout(() => {
+      setError("");
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [error]);
 
   const handleRegister = async (
     data: RegisterRequest

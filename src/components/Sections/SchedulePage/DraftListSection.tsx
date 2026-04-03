@@ -7,13 +7,13 @@ import draftImg1 from '../../../assets/ai-poster-preview.svg';
 // =============================================================================
 export interface Draft {
     id: number;
-    status: string;       // e.g. "Draft" | "Scheduled" | "Published"
-    platform: string;     // e.g. "Instagram" | "TikTok" | "Facebook"
+    status: string;      
+    platform: string;     
     title: string;
     description: string;
-    date: string;         // Format: "YYYY-MM-DD" (dari API) atau display string (dummy)
-    time: string;         // Format: "HH:MM"
-    image: string;        // URL gambar dari API atau path lokal (dummy)
+    date: string;         
+    time: string;         
+    image: string;        
 }
 
 export interface EditDraftPayload {
@@ -56,32 +56,19 @@ const DUMMY_DRAFTS: Draft[] = [
 //    Komponen UI tidak perlu diubah sama sekali.
 // =============================================================================
 const draftService = {
-    /**
-     * Ambil semua draft milik user.
-     * TODO (API): GET /api/drafts
-     */
     fetchAll: async (): Promise<Draft[]> => {
-        // -- GANTI dengan: return await api.get('/drafts');
         return new Promise((resolve) => setTimeout(() => resolve(DUMMY_DRAFTS), 500));
     },
 
-    /**
-     * Update konten & jadwal sebuah draft.
-     * TODO (API): PUT /api/drafts/:id
-     */
     update: async (id: number, payload: EditDraftPayload): Promise<Draft> => {
-        // -- GANTI dengan: return await api.put(`/drafts/${id}`, payload);
         return new Promise((resolve) =>
             setTimeout(() => resolve({ ...DUMMY_DRAFTS.find((d) => d.id === id)!, ...payload }), 300)
         );
     },
 
-    /**
-     * Hapus sebuah draft.
-     * TODO (API): DELETE /api/drafts/:id
-     */
     remove: async (id: number): Promise<void> => {
-        return new Promise((resolve) => setTimeout(() => resolve(), 300));
+        console.log("Deleting draft with id:", id);
+        return new Promise((resolve) => setTimeout(resolve, 300));
     },
 };
 
@@ -90,7 +77,6 @@ const draftService = {
 // =============================================================================
 const formatDisplayDate = (dateStr: string): string => {
     if (!dateStr) return '-';
-    // Jika sudah berbentuk display string (legacy dummy), kembalikan apa adanya
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
     const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
     const [y, m, d] = dateStr.split('-').map(Number);
@@ -107,18 +93,15 @@ export default function DraftListSection() {
     const [editingId, setEditingId]     = useState<number | null>(null);
     const [editForm, setEditForm]       = useState<EditDraftPayload>({ title: '', description: '', date: '', time: '' });
 
-    // --- State Data ---
     const [drafts, setDrafts]     = useState<Draft[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError]         = useState<string | null>(null);
 
-    // --- Animasi masuk ---
     useEffect(() => {
         const timer = setTimeout(() => setIsVisible(true), 100);
         return () => clearTimeout(timer);
     }, []);
 
-    // --- Fetch data saat komponen mount ---
     useEffect(() => {
         const loadDrafts = async () => {
             try {
@@ -147,7 +130,6 @@ export default function DraftListSection() {
     // Handler: Simpan Edit (optimistic update — UI langsung update, API di bg)
     // -------------------------------------------------------------------------
     const handleSaveEdit = async (id: number) => {
-        // Optimistic: update UI dulu
         setDrafts((prev) =>
             prev.map((d) => (d.id === id ? { ...d, ...editForm } : d))
         );
@@ -155,9 +137,7 @@ export default function DraftListSection() {
 
         try {
             await draftService.update(id, editForm);
-            // TODO: tampilkan toast sukses
         } catch {
-            // Rollback jika gagal
             setError('Gagal menyimpan perubahan. Silakan coba lagi.');
             const original = await draftService.fetchAll();
             setDrafts(original);

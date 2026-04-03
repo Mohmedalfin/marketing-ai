@@ -19,6 +19,7 @@ export const registerUser = async (
   }
 
   let data;
+  
   try {
     const textData = await response.text();
     data = textData ? JSON.parse(textData) : {};
@@ -65,3 +66,4 @@ export const registerUser = async (
 
   return data as RegisterResponse;
 };
+

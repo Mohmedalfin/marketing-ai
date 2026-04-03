@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { useRegister } from '../../../hooks/useRegister';
 import type { RegisterRequest } from '../../../types/auth';
-
-// Menggunakan asset yang tersedia
 import loginIllustration from '../../../assets/LoginIcon.svg';
 import bgImage from '../../../assets/bg-landingpage.svg';
 
@@ -14,7 +11,6 @@ export default function RegisterFormSection() {
     const [isVisible, setIsVisible] = useState(false);
     const [step, setStep] = useState(1);
     const [isAgreed, setIsAgreed] = useState(false);
-    
     const [formError, setFormError] = useState('');
 
     // Form state
@@ -77,7 +73,6 @@ export default function RegisterFormSection() {
             style={{ backgroundImage: `url(${bgImage})` }}
         >
             
-            {/* Animasi Melayang untuk Ilustrasi */}
             <style>
                 {`
                     @keyframes float-login {
@@ -125,7 +120,6 @@ export default function RegisterFormSection() {
                         )}
 
                         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
-                            {/* --- STEP 1 --- */}
                             {step === 1 && (
                                 <div className="flex flex-col gap-1 animate-in fade-in slide-in-from-left-4 duration-500">
                                     <div className="flex flex-col">
@@ -177,7 +171,6 @@ export default function RegisterFormSection() {
                                 </div>
                             )}
 
-                            {/* --- STEP 2 --- */}
                             {step === 2 && (
                                 <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-right-4 duration-500">
                                     <div className="flex w-full justify-between gap-3">
@@ -279,19 +272,16 @@ export default function RegisterFormSection() {
                         </form>
 
 
-                        {/* Garis Pemisah "Atau" */}
                         <div className="my-6 flex items-center justify-center gap-4">
                             <span className="h-px w-full bg-gray-400/50"></span>
                             <span className="text-sm font-medium text-gray-500">Atau</span>
                             <span className="h-px w-full bg-gray-400/50"></span>
                         </div>
 
-                        {/* Tombol Login Google */}
                         <button 
                             type="button"
                             className="flex w-full items-center justify-center gap-3 rounded-full border border-primary bg-white py-3 transition-all hover:bg-light-bg focus:outline-hidden"
                         >
-                            {/* SVG Logo Google Resmi */}
                             <svg viewBox="0 0 24 24" className="h-5 w-5">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -302,13 +292,11 @@ export default function RegisterFormSection() {
                         </button>
 
                         
-                        {/* Link Login */}
                         <p className="mt-4 text-center text-sm font-medium text-dark">
                             Sudah Punya Akun? <a href="/login" className="font-bold text-[#F98C23] hover:underline">Login</a>
                         </p>
                     </div>
 
-                    {/* --- KOLOM KANAN: ILUSTRASI --- */}
                     <div className={`hidden lg:flex w-full items-center justify-center transition-all duration-700 delay-400 ease-out
                         ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}
                     `}>
