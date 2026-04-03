@@ -1,12 +1,20 @@
 import DashboardPageSection from "../Sections/DashboardPage/DashboardPageSection";
 import Navbar from "../Fragments/Navbar";
 import FooterSection from "../Fragments/Footer";
+import bgLandingPage from "../../assets/bg-landingpage.svg";
+
 
 export default function DashboardPageLayout() {
     return (
-        <div className="min-h-screen bg-[linear-gradient(180deg,#B7D8B5_0%,#E8E6E0_68%,#B7D8B5_100%)] font-sans antialiased text-[#5C5C5C] flex flex-col">
+        <div className="relative min-h-screen bg-light-bg overflow-x-hidden">
             <Navbar variant="app" />
-            <main className="flex-1 w-full mt-32 md:mt-36">
+
+            <div 
+                className="absolute inset-x-0 top-0 h-screen min-h-[800px] bg-cover bg-top bg-no-repeat pointer-events-none"
+                style={{ backgroundImage: `url(${bgLandingPage})` }}
+            />
+
+            <main className="flex-1 w-full mt-32 md:mt-36 relative z-10">
                 <DashboardPageSection />
             </main>
             <FooterSection />

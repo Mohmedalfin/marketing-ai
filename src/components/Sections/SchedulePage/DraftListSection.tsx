@@ -81,7 +81,6 @@ const draftService = {
      * TODO (API): DELETE /api/drafts/:id
      */
     remove: async (id: number): Promise<void> => {
-        // -- GANTI dengan: return await api.delete(`/drafts/${id}`);
         return new Promise((resolve) => setTimeout(() => resolve(), 300));
     },
 };

@@ -1,13 +1,32 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { useRegister } from '../../../hooks/useRegister';
+import type { RegisterRequest } from '../../../types/auth';
 
 // Menggunakan asset yang tersedia
 import loginIllustration from '../../../assets/LoginIcon.svg';
 import bgImage from '../../../assets/bg-landingpage.svg';
 
 export default function RegisterFormSection() {
+    const navigate = useNavigate();
+    const { handleRegister, loading, error } = useRegister();
     const [isVisible, setIsVisible] = useState(false);
     const [step, setStep] = useState(1);
     const [isAgreed, setIsAgreed] = useState(false);
+    
+    const [formError, setFormError] = useState('');
+
+    // Form state
+    const [formData, setFormData] = useState<RegisterRequest>({
+        username: '',
+        email: '',
+        password: '',
+        first_name: '',
+        last_name: '',
+        business: '',
+        domicile: ''
+    });
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -16,6 +35,41 @@ export default function RegisterFormSection() {
 
         return () => clearTimeout(timer);
     }, []);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
+        setFormData(prev => ({ ...prev, [id]: value }));
+    };
+
+    const handleNextStep = () => {
+        if (!formData.username || !formData.email || !formData.password) {
+            setFormError('Silakan isi Username, Email, dan Password sebelum melanjutkan.');
+            return;
+        }
+        setFormError('');
+        setStep(2);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (!isAgreed) return;
+        
+        if (!formData.first_name || !formData.last_name || !formData.business || !formData.domicile) {
+            setFormError('Silakan isi semua data sebelum mendaftar.');
+            return;
+        }
+
+        setFormError('');
+
+        try {
+            await handleRegister(formData);
+            alert('Registrasi berhasil! Silakan login.');
+            navigate('/login');
+        } catch {
+            // error sudah ditangani di hook
+        }
+    };
 
     return (
         <section 
@@ -38,9 +92,6 @@ export default function RegisterFormSection() {
             </style>
 
             <div className="mx-auto w-full max-w-6xl">
-                
-                {/* --- HEADER TITLE & LOGO (Tengah Atas) --- */}
-
 
                 {/* --- MAIN GRID LAYOUT (Form Kiri, Gambar Kanan) --- */}
                 <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-32 xl:gap-40">
@@ -67,7 +118,13 @@ export default function RegisterFormSection() {
                             />
                         </div>
 
-                        <form className="flex flex-col gap-3">
+                        {(error || formError) && (
+                            <div className="mb-4 rounded-lg bg-red-100 p-3 text-sm text-red-700">
+                                {error || formError}
+                            </div>
+                        )}
+
+                        <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
                             {/* --- STEP 1 --- */}
                             {step === 1 && (
                                 <div className="flex flex-col gap-1 animate-in fade-in slide-in-from-left-4 duration-500">
@@ -78,6 +135,9 @@ export default function RegisterFormSection() {
                                         <input 
                                             type="text" 
                                             id="username"
+                                            value={formData.username}
+                                            onChange={handleInputChange}
+                                            required
                                             className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                         />
                                     </div>
@@ -88,6 +148,9 @@ export default function RegisterFormSection() {
                                         <input 
                                             type="email" 
                                             id="email"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
+                                            required
                                             className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                         />
                                     </div>
@@ -98,12 +161,15 @@ export default function RegisterFormSection() {
                                         <input 
                                             type="password" 
                                             id="password"
+                                            value={formData.password}
+                                            onChange={handleInputChange}
+                                            required
                                             className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                         />
                                     </div>
                                     <button 
                                         type="button"
-                                        onClick={() => setStep(2)}
+                                        onClick={handleNextStep}
                                         className="mt-4 w-full rounded-full bg-primary py-3 text-base font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-primary-hover hover:shadow-lg focus:outline-hidden"
                                     >
                                         Selanjutnya
@@ -121,17 +187,23 @@ export default function RegisterFormSection() {
                                             </label>
                                             <input 
                                                 type="text" 
-                                                id="firstName"
+                                                id="first_name"
+                                                value={formData.first_name}
+                                                onChange={handleInputChange}
+                                                required
                                                 className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                             />
                                         </div>
                                         <div className="flex w-full flex-col">
-                                            <label className="mb-1 text-sm font-bold text-primary" htmlFor="lastName">
+                                            <label className="mb-1 text-sm font-bold text-primary" htmlFor="last_name">
                                                 Nama Akhir
                                             </label>
                                             <input 
                                                 type="text" 
-                                                id="lastName"
+                                                id="last_name"
+                                                value={formData.last_name}
+                                                onChange={handleInputChange}
+                                                required
                                                 className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                             />
                                         </div>
@@ -144,6 +216,9 @@ export default function RegisterFormSection() {
                                         <input 
                                             type="text" 
                                             id="business"
+                                            value={formData.business}
+                                            onChange={handleInputChange}
+                                            required
                                             className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                         />
                                     </div>
@@ -155,6 +230,9 @@ export default function RegisterFormSection() {
                                         <input 
                                             type="text" 
                                             id="domicile"
+                                            value={formData.domicile}
+                                            onChange={handleInputChange}
+                                            required
                                             className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                         />
                                     </div>
@@ -191,10 +269,10 @@ export default function RegisterFormSection() {
 
                                     <button 
                                         type="submit"
-                                        disabled={!isAgreed}
+                                        disabled={!isAgreed || loading}
                                         className="mt-4 w-full rounded-full bg-primary py-3 text-base font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-primary-hover hover:shadow-lg focus:outline-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:bg-primary"
                                     >
-                                        Daftar
+                                        {loading ? 'Mendaftar...' : 'Daftar'}
                                     </button>
                                 </div>
                             )}
