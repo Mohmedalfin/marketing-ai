@@ -5,9 +5,9 @@ import LandingPageLayout from './components/Layouts/LandingPageLayout'
 import AiPageLayout from './components/Layouts/AiPageLayout'
 import LoginPageLayout from './components/Layouts/LoginPagelayout'
 import RegisterPageLayout from './components/Layouts/RegisterPagelayout'
+import DashboardPage from './pages/DashboardPage'
 import ErrorPage from './pages/error'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
 
 export const router = createBrowserRouter([
   {
@@ -30,13 +30,16 @@ export const router = createBrowserRouter([
         element: <AiPageLayout />,
       },
       {
+        path: "/dashboard",
+        element: <DashboardPage />,
+      },
+      {
         path: "*",
-        element: <ErrorPage />, // untuk 404
+        element: <ErrorPage />,
       }
     ],
   }
 ]);
-  
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
