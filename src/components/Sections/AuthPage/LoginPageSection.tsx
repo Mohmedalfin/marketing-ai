@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 
 // Menggunakan asset yang tersedia
-import logoAigency from '../../../assets/logo.png';
 import loginIllustration from '../../../assets/LoginIcon.svg';
 import bgImage from '../../../assets/bg-landingpage.svg';
 
 export default function LoginFormSection() {
     const [isVisible, setIsVisible] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -38,24 +38,6 @@ export default function LoginFormSection() {
 
             <div className="mx-auto w-full max-w-6xl">
                 
-                {/* --- HEADER TITLE & LOGO (Tengah Atas) --- */}
-                <div className={`mb-10 flex flex-col items-center justify-center transition-all duration-700 ease-out
-                    ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}
-                `}>
-                    <div className="flex flex-col items-center">
-                        <h1 className="text-4xl md:text-5xl font-extrabold text-dark tracking-tight -translate-x-8 md:-translate-x-12">
-                            Welcome
-                        </h1>
-                        {/* Template tempat logo AiGency */}
-                        <div className="mt-1 flex items-center justify-center translate-x-8 md:translate-x-12">
-                            <img 
-                                src={logoAigency} 
-                                alt="AiGency Logo" 
-                                className="h-10 md:h-12 w-auto object-contain" 
-                            />
-                        </div>
-                    </div>
-                </div>
 
                 {/* --- MAIN GRID LAYOUT (Form Kiri, Gambar Kanan) --- */}
                 <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-32 xl:gap-40">
@@ -89,7 +71,36 @@ export default function LoginFormSection() {
                                     id="password"
                                     className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                 />
-                                <a href="/forgot-password" className="mt-2 self-end text-xs font-semibold text-dark hover:text-primary transition-colors">
+                            </div>
+
+                            {/* Ingat Saya & Lupa Password — satu baris */}
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <div className="relative shrink-0 flex items-center justify-center">
+                                        <input
+                                            type="checkbox"
+                                            id="remember-me"
+                                            checked={rememberMe}
+                                            onChange={(e) => setRememberMe(e.target.checked)}
+                                            className="peer h-4 w-4 cursor-pointer appearance-none rounded border border-primary bg-white checked:bg-primary transition-all"
+                                        />
+                                        <svg
+                                            className="pointer-events-none absolute h-2.5 w-2.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity"
+                                            viewBox="0 0 12 12"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2.5"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        >
+                                            <polyline points="2,6 5,9 10,3" />
+                                        </svg>
+                                    </div>
+                                    <label htmlFor="remember-me" className="cursor-pointer text-xs text-gray-600">
+                                        Ingat Saya
+                                    </label>
+                                </div>
+                                <a href="/forgot-password" className="text-xs font-semibold text-dark hover:text-primary transition-colors">
                                     Lupa Password ?
                                 </a>
                             </div>
@@ -97,7 +108,7 @@ export default function LoginFormSection() {
                             {/* Tombol Masuk Akun */}
                             <button 
                                 type="submit"
-                                className="mt-2 w-full rounded-full bg-primary py-3 text-base font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-primary-hover hover:shadow-lg focus:outline-hidden"
+                                className="mt-6 w-full rounded-full bg-primary py-3 text-base font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-primary-hover hover:shadow-lg focus:outline-hidden"
                             >
                                 Masuk Akun
                             </button>
@@ -129,8 +140,6 @@ export default function LoginFormSection() {
                         <p className="mt-4 text-center text-sm font-medium text-dark">
                             Belum Punya Akun? <a href="/register" className="font-bold text-[#F98C23] hover:underline">Registrasi</a>
                         </p>
-
-
                     </div>
 
                     {/* --- KOLOM KANAN: ILUSTRASI --- */}
