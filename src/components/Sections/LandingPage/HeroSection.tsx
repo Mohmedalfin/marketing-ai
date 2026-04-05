@@ -20,7 +20,7 @@ const HeroSection = () => {
 
     return (
         <section 
-            className="relative w-full min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center pt-28 pb-12 lg:pt-0 lg:pb-0"
+            className="relative w-full min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center pt-20 pb-12 lg:pt-0 lg:pb-0"
             style={{ backgroundImage: `url(${bgLandingPage})` }}
         >
             <div className="mx-auto flex w-full max-w-7xl items-center px-6 md:px-12 lg:px-16">
