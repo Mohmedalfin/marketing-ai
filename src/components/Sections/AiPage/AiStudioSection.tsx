@@ -119,7 +119,7 @@ const AiStudioSection = () => {
     }, []);
 
     return (
-        <section ref={sectionRef} className="w-full py-6 px-6 md:px-12 lg:px-16 overflow-hidden">
+        <section ref={sectionRef} className="w-full px-6 md:px-12 lg:px-16 overflow-hidden">
             <div className="mx-auto max-w-7xl">
                 
                 {/* --- HEADER --- */}
@@ -274,21 +274,21 @@ const AiStudioSection = () => {
                                 
                                 {/* Frame Poster (Bentuk Pakem, Anti Potong) */}
                                 <div className="w-full flex-1 relative flex items-center justify-center">
-                                    <div className="relative w-full max-w-sm aspect-3/4 ring-1 ring-gray-900/5 shadow-2xl shadow-primary/20 rounded-xl overflow-hidden flex items-center justify-center p-2 bg-white">
+                                    <div className={`relative w-full max-w-sm ${generatedPoster ? 'aspect-3/4' : 'h-15 lg:h-40 w-full'} transition-all duration-700 ease-in-out ring-1 ring-gray-900/5 shadow-2xl shadow-primary/20 rounded-xl overflow-hidden flex items-center justify-center p-2 bg-white`}>
                                         {isGenerating ? (
                                             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-50/90 backdrop-blur-sm p-6 text-center">
-                                                <svg className="w-10 h-10 md:w-12 md:h-12 text-primary/50 mb-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className="w-8 h-8 md:w-10 md:h-10 text-primary/50 mb-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                                 </svg>
-                                                <span className="text-xs md:text-sm font-bold text-primary animate-pulse">
+                                                <span className="text-[10px] md:text-xs font-bold text-primary animate-pulse">
                                                     {loadingMessage}
                                                 </span>
                                             </div>
                                         ) : generatedPoster ? (
                                             <img src={generatedPoster} alt="Generated Poster Preview" className="w-full h-full object-contain transition-opacity duration-500" />
                                         ) : (
-                                            <div className="flex items-center justify-center text-gray-400 w-full h-full text-xs text-center p-4">
-                                                Belum ada poster. Klik Generate untuk memulai.
+                                            <div className="flex items-center justify-center text-gray-400 w-full h-full text-[10px] md:text-xs text-center p-4">
+                                                Belum ada poster. Klik Generate.
                                             </div>
                                         )}
                                     </div>
@@ -296,10 +296,10 @@ const AiStudioSection = () => {
                             </div>
 
                             {/* Kanan: Caption & Pengaturan Jadwal */}
-                            <div className="flex flex-col h-full">
+                            <div className="flex flex-col h-full gap-4 md:gap-0 mt-4 md:mt-0">
                                 
                                 {/* Box Caption */}
-                                <div className="flex flex-col flex-1 min-h-[220px] md:min-h-0 rounded-2xl border border-primary p-4 bg-white relative">
+                                <div className={`flex flex-col flex-1 ${generatedPoster ? 'min-h-[220px] md:min-h-0' : 'min-h-[100px] h-32 lg:h-auto'} transition-all duration-700 ease-in-out rounded-2xl border border-primary p-4 bg-white relative`}>
                                     {/* Header Caption Box */}
                                     <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-3 shrink-0">
                                         <div className="flex items-center gap-3">
@@ -404,7 +404,7 @@ const AiStudioSection = () => {
                                 </div>
 
                                 {/* Tombol Posting */}
-                                <button className="mt-auto pt-6 w-full focus:outline-hidden">
+                                <button className="mt-auto pt-6 w-full focus:outline-hidden mb-4">
                                     <div className="w-full rounded-full bg-[#F98C23] py-3 md:py-3.5 text-base md:text-lg font-bold text-white shadow-md transition-all duration-300 hover:bg-[#e07a1b] hover:-translate-y-1 hover:shadow-lg">
                                         Posting
                                     </div>

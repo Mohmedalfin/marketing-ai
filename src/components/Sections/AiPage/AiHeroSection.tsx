@@ -27,7 +27,7 @@ const AiHeroSection = () => {
         // Background menggunakan SVG landing page yang dilanjuti ke section berikutnya (diatur di Layout)
         <section 
             ref={sectionRef} 
-            className="w-full min-h-[70vh] flex items-center justify-center pt-14 px-6 md:px-12 lg:px-16 overflow-hidden"
+            className="w-full pt-28 lg:pt-32 pb-10 px-6 md:px-12 lg:px-16 overflow-hidden"
         >
             
             {/* CSS Custom Keyframes untuk animasi gambar melayang terus-menerus */}
