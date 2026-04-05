@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
 import draftImg1 from '../../../assets/ai-poster-preview.svg';
+import headerAsset from '../../../assets/faq-illustration.svg';
 
-// =============================================================================
-// 1. TYPE DEFINITIONS
-//    Sesuaikan field ini dengan response JSON dari backend API nantinya.
-// =============================================================================
 export interface Draft {
     id: number;
     status: string;      
@@ -23,10 +20,6 @@ export interface EditDraftPayload {
     time: string;
 }
 
-// =============================================================================
-// 2. DUMMY DATA
-//    Hapus bagian ini saat sudah pakai API. Pindahkan ke file mock jika perlu.
-// =============================================================================
 const DUMMY_DRAFTS: Draft[] = [
     {
         id: 1,
@@ -48,13 +41,48 @@ const DUMMY_DRAFTS: Draft[] = [
         time: '10:00',
         image: draftImg1,
     },
+    {
+        id: 3,
+        status: 'Draft',
+        platform: 'Instagram',
+        title: 'Promo Spesial Ramadhan Segera Hadir',
+        description: 'Jangan lewatkan penawaran menarik kami menarik kami, Jangan lewatkan penawaran menarik kami menarik kami. #instagram #Aigency #tamaddan #proots',
+        date: '2026-03-19',
+        time: '15:45',
+        image: draftImg1,
+    },
+    {
+        id: 4,
+        status: 'Draft',
+        platform: 'TikTok',
+        title: 'Koleksi Sepatu Kets Terbaru 2026',
+        description: 'Tingkatkan gaya kasualmu dengan koleksi terbaru kami. Dapatkan diskon 20% khusus minggu ini! #SepatuKets #Diskon',
+        date: '2026-03-20',
+        time: '10:00',
+        image: draftImg1,
+    },
+    {
+        id: 5,
+        status: 'Draft',
+        platform: 'Instagram',
+        title: 'Promo Spesial Ramadhan Segera Hadir',
+        description: 'Jangan lewatkan penawaran menarik kami menarik kami, Jangan lewatkan penawaran menarik kami menarik kami. #instagram #Aigency #tamaddan #proots',
+        date: '2026-03-19',
+        time: '15:45',
+        image: draftImg1,
+    },
+    {
+        id: 6,
+        status: 'Draft',
+        platform: 'TikTok',
+        title: 'Koleksi Sepatu Kets Terbaru 2026',
+        description: 'Tingkatkan gaya kasualmu dengan koleksi terbaru kami. Dapatkan diskon 20% khusus minggu ini! #SepatuKets #Diskon',
+        date: '2026-03-20',
+        time: '10:00',
+        image: draftImg1,
+    },
 ];
 
-// =============================================================================
-// 3. SERVICE LAYER (API ADAPTER)
-//    Saat implementasi API, ganti isi fungsi-fungsi ini dengan fetch/axios call.
-//    Komponen UI tidak perlu diubah sama sekali.
-// =============================================================================
 const draftService = {
     fetchAll: async (): Promise<Draft[]> => {
         return new Promise((resolve) => setTimeout(() => resolve(DUMMY_DRAFTS), 500));
@@ -72,9 +100,6 @@ const draftService = {
     },
 };
 
-// =============================================================================
-// 4. HELPER — Format tanggal ISO → tampilan Indonesia
-// =============================================================================
 const formatDisplayDate = (dateStr: string): string => {
     if (!dateStr) return '-';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
@@ -83,9 +108,6 @@ const formatDisplayDate = (dateStr: string): string => {
     return `${d} ${months[m - 1]} ${y}`;
 };
 
-// =============================================================================
-// 5. KOMPONEN UTAMA
-// =============================================================================
 export default function DraftListSection() {
     // --- State UI ---
     const [isVisible, setIsVisible]     = useState(false);
@@ -118,17 +140,11 @@ export default function DraftListSection() {
         loadDrafts();
     }, []);
 
-    // -------------------------------------------------------------------------
-    // Handler: Mulai Edit
-    // -------------------------------------------------------------------------
     const handleEditClick = (draft: Draft) => {
         setEditingId(draft.id);
         setEditForm({ title: draft.title, description: draft.description, date: draft.date, time: draft.time });
     };
 
-    // -------------------------------------------------------------------------
-    // Handler: Simpan Edit (optimistic update — UI langsung update, API di bg)
-    // -------------------------------------------------------------------------
     const handleSaveEdit = async (id: number) => {
         setDrafts((prev) =>
             prev.map((d) => (d.id === id ? { ...d, ...editForm } : d))
@@ -166,20 +182,45 @@ export default function DraftListSection() {
             d.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // ==========================================================================
-    // RENDER
-    // ==========================================================================
     return (
         <section className="min-h-screen w-full py-10 md:py-20 px-6 md:px-12 lg:px-16">
             <div className="mx-auto max-w-7xl">
 
-                {/* Header */}
-                <div className={`mb-8 transition-all duration-700 ease-out ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}>
-                    <h1 className="text-4xl font-extrabold text-dark tracking-tight">Daftar Draft</h1>
-                    <p className="mt-2 text-sm md:text-lg font-medium text-dark/80 max-w-4xl">
-                        Kelola dan edit postingan sosial mediamu.
-                    </p>
+                <div className={`mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 transition-all duration-700 ease-out ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}>
+                    
+                    <div className="flex items-start gap-5 md:gap-6">
+                        <div className="hidden sm:flex h-20 w-20 md:h-30 md:w-30 shrink-0 overflow-hidden">
+                            <img 
+                                src={headerAsset} 
+                                alt="Header Dekorasi" 
+                                className="h-full w-full object-cover" 
+                            />
+                        </div>
+
+                        <div className="flex flex-col justify-center">
+                            <div className="flex flex-wrap items-center gap-3 mb-2 md:mb-3">
+                                <h1 className="text-4xl md:text-5xl font-extrabold text-dark tracking-tight">
+                                    Daftar Draft
+                                </h1>
+                                
+                                <span className="flex items-center gap-1.5 rounded-full bg-primary-light/30 px-3 py-1 text-xs font-bold text-primary border border-primary/20">
+                                    <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                                    </span>
+                                    {drafts.length} Tersimpan
+                                </span>
+                            </div>
+                            
+                            <p className="text-sm md:text-base font-medium text-dark/70 max-w-2xl leading-relaxed">
+                                Ruang kerjamu untuk mengelola, mengedit, dan menyempurnakan postingan sebelum diterbitkan ke audiens.
+                            </p>
+                        </div>
+                    </div>
+
                 </div>
+
+                
 
                 {/* Search Bar */}
                 <div className={`relative mb-10 w-full transition-all duration-700 delay-200 ease-out ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>

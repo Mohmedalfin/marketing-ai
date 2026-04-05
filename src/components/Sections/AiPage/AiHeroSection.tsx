@@ -82,7 +82,7 @@ const AiHeroSection = () => {
                     </div>
 
                     {/* --- KOLOM KANAN: Ilustrasi (Animasi Bergerak Terus Menerus) --- */}
-                    <div className={`relative hidden n flex w-full items-center justify-center lg:justify-end transition-all duration-1000 delay-300 ease-out
+                    <div className={`relative hidden md:none-hidden lg:flex w-full items-center justify-center lg:justify-end transition-all duration-1000 delay-300 ease-out
                         ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-16 opacity-0'}
                     `}>
                         {/* Gambar ini akan melayang-layang tiada henti karena class animate-float-dynamic */}
