@@ -36,8 +36,8 @@ export default function Navbar({ variant = "landing" }: { variant?: string }) {
         className={`mx-auto flex w-full items-center justify-between transition-all duration-300 border
         ${
           isScrolled
-            ? "max-w-[1400px] rounded-full border-gray-200/70 bg-white/85 px-8 py-3.5 shadow-[0_4px_24px_rgb(0,0,0,0.08)] backdrop-blur-md"
-            : "max-w-[1560px] border-transparent bg-transparent px-10 py-5"
+            ? "max-w-[1400px] rounded-full border-gray-200/70 bg-white/85 px-6 lg:px-8 py-3.5 shadow-[0_4px_24px_rgb(0,0,0,0.08)] backdrop-blur-md"
+            : "max-w-[1560px] border-transparent bg-transparent px-6 sm:px-10 md:px-12 lg:px-16 xl:px-20 py-5"
         }`}
       >
         {/* Logo */}
@@ -185,8 +185,8 @@ export default function Navbar({ variant = "landing" }: { variant?: string }) {
 
         {/* Mobile Menu */}
         <div
-          className={`absolute left-0 right-0 top-full mt-3 md:hidden bg-white rounded-2xl shadow-xl transition-all
-          ${isOpen ? "max-h-80 opacity-100 visible" : "max-h-0 opacity-0 invisible"}
+          className={`absolute left-4 right-4 top-full mt-3 md:hidden bg-white rounded-2xl shadow-xl transition-all
+          ${isOpen ? "max-h-[30rem] opacity-100 visible" : "max-h-0 opacity-0 invisible"}
         `}
         >
           <div className="flex flex-col gap-4 p-6">
