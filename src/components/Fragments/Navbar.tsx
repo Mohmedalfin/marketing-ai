@@ -226,7 +226,7 @@ export default function Navbar({ variant = "landing" }: { variant?: string }) {
                   Schedule
                 </a>
                 <a
-                  href="/ai-studio"
+                  href="/ai"
                   className="rounded-full bg-[#3BB77E] px-4 py-2 text-center text-white"
                 >
                   Ai Studio
