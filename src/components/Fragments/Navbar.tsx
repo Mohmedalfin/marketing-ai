@@ -42,7 +42,7 @@ export default function Navbar({ variant = "landing" }: { variant?: string }) {
       >
         {/* Logo */}
         <div className="flex flex-1 items-center justify-between md:justify-start">
-          <a href="/" aria-label="Brand">
+          <a href={variant === "app" ? "/dashboard" : "/"} aria-label="Brand">
             <img
               src={logoGambar}
               alt="AiGency Logo"
@@ -140,7 +140,7 @@ export default function Navbar({ variant = "landing" }: { variant?: string }) {
                 Schedule
               </a>
             <a
-              href="/ai-studio"
+              href="/ai"
               className="rounded-full bg-[#3BB77E] px-6 py-2.5 text-white font-semibold hover:bg-[#2fa36d]"
             >
               Ai Studio

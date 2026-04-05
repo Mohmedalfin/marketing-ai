@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRegister } from '../../../hooks/useRegister';
+import { useNotification } from '../../../hooks/useNotification'; // Import Hook
+import { ToastNotification } from '../../Elements/ToastNotification';   // Import Komponen UI
 import type { RegisterRequest } from '../../../types/auth';
 import loginIllustration from '../../../assets/LoginIcon.svg';
 import bgImage from '../../../assets/bg-landingpage.svg';
@@ -11,7 +13,6 @@ export default function RegisterFormSection() {
     const [isVisible, setIsVisible] = useState(false);
     const [step, setStep] = useState(1);
     const [isAgreed, setIsAgreed] = useState(false);
-    const [formError, setFormError] = useState('');
 
     // Form state
     const [formData, setFormData] = useState<RegisterRequest>({
@@ -24,14 +25,20 @@ export default function RegisterFormSection() {
         domicile: ''
     });
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsVisible(true);
-        }, 50);
+    // Panggil hook notifikasi
+    const { 
+        notifMessage, 
+        isNotifVisible, 
+        notifType,
+        showNotification, 
+        closeNotification 
+    } = useNotification(error);
 
+    useEffect(() => {
+        const timer = setTimeout(() => setIsVisible(true), 50);
         return () => clearTimeout(timer);
     }, []);
-
+   
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
         setFormData(prev => ({ ...prev, [id]: value }));
@@ -39,10 +46,10 @@ export default function RegisterFormSection() {
 
     const handleNextStep = () => {
         if (!formData.username || !formData.email || !formData.password) {
-            setFormError('Silakan isi Username, Email, dan Password sebelum melanjutkan.');
+            showNotification('Silakan isi Username, Email, dan Password sebelum melanjutkan.', 'error');
             return;
         }
-        setFormError('');
+        
         setStep(2);
     };
 
@@ -52,18 +59,21 @@ export default function RegisterFormSection() {
         if (!isAgreed) return;
         
         if (!formData.first_name || !formData.last_name || !formData.business || !formData.domicile) {
-            setFormError('Silakan isi semua data sebelum mendaftar.');
+            showNotification('Silakan isi semua data sebelum mendaftar.', 'error');
             return;
         }
 
-        setFormError('');
-
         try {
             await handleRegister(formData);
-            alert('Registrasi berhasil! Silakan login.');
-            navigate('/login');
+            
+            showNotification('Registrasi berhasil! Mengalihkan ke login...', 'success');
+            
+            setTimeout(() => {
+                navigate('/login');
+            }, 1500);
+            
         } catch {
-            // error sudah ditangani di hook
+            // error dari API sudah otomatis ditangani dan dimunculkan oleh useNotification
         }
     };
 
@@ -112,12 +122,6 @@ export default function RegisterFormSection() {
                                 aria-label="Step 2"
                             />
                         </div>
-
-                        {(error || formError) && (
-                            <div className="mb-4 rounded-lg bg-red-100 p-3 text-sm text-red-700">
-                                {error || formError}
-                            </div>
-                        )}
 
                         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
                             {step === 1 && (
@@ -308,6 +312,14 @@ export default function RegisterFormSection() {
                     </div>
                 </div>
             </div>
+
+            {/* --- PENEMPATAN NOTIFIKASI KANAN ATAS --- */}
+           <ToastNotification 
+                message={notifMessage} 
+                isVisible={isNotifVisible} 
+                onClose={closeNotification}
+                type={notifType}
+            />
         </section>
     );
 }

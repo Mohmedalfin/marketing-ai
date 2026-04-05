@@ -1,12 +1,37 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+// 1. Import Hooks & Komponen UI
+import { useLogin } from '../../../hooks/useLogin';
+import { useNotification } from '../../../hooks/useNotification';
+import { ToastNotification } from '../../Elements/ToastNotification';
 
 // Menggunakan asset yang tersedia
 import loginIllustration from '../../../assets/LoginIcon.svg';
 import bgImage from '../../../assets/bg-landingpage.svg';
 
 export default function LoginFormSection() {
+    const navigate = useNavigate();
+    
+    // 2. Inisialisasi Hook API Login
+    const { handleLogin, loading, error } = useLogin();
+    
+    // 3. Inisialisasi Hook Notifikasi (Otomatis menangkap 'error' dari API)
+    const { 
+        notifMessage, 
+        isNotifVisible, 
+        notifType, 
+        showNotification, 
+        closeNotification 
+    } = useNotification(error);
+
+    // State UI
     const [isVisible, setIsVisible] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+    
+    // 4. State Form Input
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -15,6 +40,38 @@ export default function LoginFormSection() {
 
         return () => clearTimeout(timer);
     }, []);
+
+    // 5. Fungsi Submit Form
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // Validasi form kosong
+        if (!email || !password) {
+            showNotification('Email dan Password wajib diisi.', 'error');
+            return;
+        }
+
+        try {
+            // Eksekusi API Login
+            const response = await handleLogin({
+                grant_type: 'password',
+                username: email,
+                password: password
+            });
+
+            // Opsional: Simpan token ke localStorage jika diperlukan
+            localStorage.setItem('access_token', response.access_token);
+
+            // Tampilkan sukses & alihkan halaman
+            showNotification('Login berhasil! Mengalihkan...', 'success');
+            setTimeout(() => {
+                navigate('/dashboard'); // Sesuaikan dengan rute dashboard/beranda kamu
+            }, 1500);
+
+        } catch {
+            // Error biarkan ditangani oleh useNotification
+        }
+    };
 
     return (
         <section 
@@ -48,7 +105,8 @@ export default function LoginFormSection() {
                     `}>
                         <h2 className="mb-4 text-2xl font-extrabold text-dark">LOGIN</h2>
 
-                        <form className="flex flex-col gap-2">
+                        {/* Tambahkan onSubmit ke form */}
+                        <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
                             {/* Input Email */}
                             <div className="flex flex-col">
                                 <label className="mb-1 text-sm font-bold text-primary" htmlFor="email">
@@ -57,7 +115,10 @@ export default function LoginFormSection() {
                                 <input 
                                     type="email" 
                                     id="email"
-                                    className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-none focus:ring-1 focus:ring-primary transition-all bg-white"
                                 />
                             </div>
 
@@ -69,7 +130,10 @@ export default function LoginFormSection() {
                                 <input 
                                     type="password" 
                                     id="password"
-                                    className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-none focus:ring-1 focus:ring-primary transition-all bg-white"
                                 />
                             </div>
 
@@ -108,9 +172,10 @@ export default function LoginFormSection() {
                             {/* Tombol Masuk Akun */}
                             <button 
                                 type="submit"
-                                className="mt-6 w-full rounded-full bg-primary py-3 text-base font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-primary-hover hover:shadow-lg focus:outline-hidden"
+                                disabled={loading}
+                                className="mt-6 w-full rounded-full bg-primary py-3 text-base font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-primary-hover hover:shadow-lg focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:bg-primary"
                             >
-                                Masuk Akun
+                                {loading ? 'Memproses...' : 'Masuk Akun'}
                             </button>
                         </form>
 
@@ -124,7 +189,7 @@ export default function LoginFormSection() {
                         {/* Tombol Login Google */}
                         <button 
                             type="button"
-                            className="flex w-full items-center justify-center gap-3 rounded-full border border-primary bg-white py-3 transition-all hover:bg-light-bg focus:outline-hidden"
+                            className="flex w-full items-center justify-center gap-3 rounded-full border border-primary bg-white py-3 transition-all hover:bg-light-bg focus:outline-none"
                         >
                             {/* SVG Logo Google Resmi */}
                             <svg viewBox="0 0 24 24" className="h-5 w-5">
@@ -155,6 +220,15 @@ export default function LoginFormSection() {
 
                 </div>
             </div>
+
+            {/* 6. Penempatan Notifikasi */}
+            <ToastNotification 
+                message={notifMessage} 
+                isVisible={isNotifVisible} 
+                onClose={closeNotification}
+                type={notifType}
+            />
+
         </section>
     );
 }

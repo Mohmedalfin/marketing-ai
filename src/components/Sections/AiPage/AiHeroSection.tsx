@@ -48,10 +48,10 @@ const AiHeroSection = () => {
             <div className={`mx-auto w-full max-w-7xl bg-white rounded-2xl p-8 sm:p-10 lg:px-12 lg:py-8 shadow-[0_8px_40px_rgb(0,0,0,0.06)] transition-all duration-1000 ease-out
                 ${isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-16 opacity-0 scale-95'}
             `}>
-                <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+                <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
                     
                     {/* --- KOLOM KIRI: Teks & Tags --- */}
-                    <div className="flex flex-col items-start gap-6 lg:pr-8">
+                    <div className="flex flex-col items-start gap-4 lg:pr-8">
                         
                         {/* Headline */}
                         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-dark leading-[1.15] tracking-tight">
@@ -82,7 +82,7 @@ const AiHeroSection = () => {
                     </div>
 
                     {/* --- KOLOM KANAN: Ilustrasi (Animasi Bergerak Terus Menerus) --- */}
-                    <div className={`relative flex w-full items-center justify-center lg:justify-end transition-all duration-1000 delay-300 ease-out
+                    <div className={`relative hidden n flex w-full items-center justify-center lg:justify-end transition-all duration-1000 delay-300 ease-out
                         ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-16 opacity-0'}
                     `}>
                         {/* Gambar ini akan melayang-layang tiada henti karena class animate-float-dynamic */}
