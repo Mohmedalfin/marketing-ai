@@ -119,7 +119,7 @@ const AiStudioSection = () => {
     }, []);
 
     return (
-        <section ref={sectionRef} className="w-full py-10 px-6 md:px-12 lg:px-16 overflow-hidden">
+        <section ref={sectionRef} className="w-full py-6 px-6 md:px-12 lg:px-16 overflow-hidden">
             <div className="mx-auto max-w-7xl">
                 
                 {/* --- HEADER --- */}
@@ -248,7 +248,8 @@ const AiStudioSection = () => {
                     {/* ==========================================
                         KOLOM KANAN: OUTPUT (Porsi 8/12 Kolom)
                     ========================================== */}
-                    <div className={`relative lg:col-span-8 flex flex-col rounded-[2rem] border-2 border-primary bg-white p-6 sm:p-8 shadow-sm transition-all duration-1000 delay-500 ease-out
+                    <div className={`relative lg:col-span-8 flex-col rounded-[2rem] border-2 border-primary bg-white p-6 sm:p-8 shadow-sm transition-all duration-1000 delay-500 ease-out
+                        ${(isGenerating || generatedPoster) ? 'flex' : 'hidden lg:flex'}
                         ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-16 opacity-0'}
                     `}>
                         {/* Tombol Refresh (Pojok Kanan Atas) */}
