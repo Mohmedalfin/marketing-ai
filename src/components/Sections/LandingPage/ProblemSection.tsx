@@ -11,7 +11,7 @@ const smallCards = [
 ];
 
 // Konten dalam kartu dengan hover reveal effect
-const CardContent = ({ card }: { card: typeof smallCards[0] }) => (
+const CardContent = ({ card, isActive = false }: { card: typeof smallCards[0], isActive?: boolean }) => (
     <div className="p-5 flex flex-col h-full overflow-hidden">
         {/* Badge label — selalu tampil di normal flow */}
         <span
@@ -23,11 +23,10 @@ const CardContent = ({ card }: { card: typeof smallCards[0] }) => (
 
         {/* Container yang menampung kedua layer — relatif terhadap sisa ruang */}
         <div className="relative flex-1 mt-1">
-            {/* === LAYER ICON === tampil default, hilang saat hover */}
-            <div className="absolute inset-0 flex flex-col justify-between
-                transition-all duration-500 ease-out
-                group-hover:opacity-0 group-hover:-translate-y-3 group-hover:scale-95
-            ">
+            {/* === LAYER ICON === tampil default, hilang saat hover (desktop) atau isActive (mobile) */}
+            <div className={`absolute inset-0 flex flex-col justify-between transition-all duration-500 ease-out
+                ${isActive ? 'opacity-0 -translate-y-3 scale-95' : 'lg:group-hover:opacity-0 lg:group-hover:-translate-y-3 lg:group-hover:scale-95'}
+            `}>
                 <div className="flex-1 flex items-center justify-center">
                     <img src={card.img} alt={card.text} className="h-38 sm:h-42 object-contain" />
                 </div>
@@ -36,12 +35,10 @@ const CardContent = ({ card }: { card: typeof smallCards[0] }) => (
                 </p>
             </div>
 
-            {/* === LAYER TEXT === tersembunyi default, muncul saat hover */}
-            <div className="absolute inset-0 flex flex-col justify-center gap-2
-                opacity-0 translate-y-4
-                transition-all duration-500 ease-out
-                group-hover:opacity-100 group-hover:translate-y-0
-            ">
+            {/* === LAYER TEXT === tersembunyi default, muncul saat hover (desktop) atau isActive (mobile) */}
+            <div className={`absolute inset-0 flex flex-col justify-center gap-2 transition-all duration-500 ease-out
+                ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 lg:group-hover:opacity-100 lg:group-hover:translate-y-0'}
+            `}>
                 <p
                     className={`text-2xl sm:text-3xl font-black bg-gradient-to-br ${card.accent} text-transparent bg-clip-text leading-tight`}
                     style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
@@ -149,7 +146,7 @@ const ProblemSection = () => {
                                         shadow-[0_4px_24px_rgb(0,0,0,0.06)] cursor-pointer
                                         transition-shadow duration-300 hover:shadow-[0_12px_32px_rgb(0,0,0,0.1)]"
                                 >
-                                    <CardContent card={card} />
+                                    <CardContent card={card} isActive={index === carouselIndex} />
                                 </div>
                             ))}
 
