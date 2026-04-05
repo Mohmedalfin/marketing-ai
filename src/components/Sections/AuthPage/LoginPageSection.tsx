@@ -75,7 +75,7 @@ export default function LoginFormSection() {
 
     return (
         <section 
-            className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden px-6 py-12 md:px-12 lg:px-16 bg-cover bg-center bg-no-repeat"
+            className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden px-6 py-10 md:px-12 lg:px-16 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${bgImage})` }}
         >
             
