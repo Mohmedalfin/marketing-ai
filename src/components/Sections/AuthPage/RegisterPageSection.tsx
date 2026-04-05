@@ -1,21 +1,81 @@
 import { useState, useEffect } from 'react';
-
-// Menggunakan asset yang tersedia
+import { useNavigate } from 'react-router-dom';
+import { useRegister } from '../../../hooks/useRegister';
+import { useNotification } from '../../../hooks/useNotification'; // Import Hook
+import { ToastNotification } from '../../Elements/ToastNotification';   // Import Komponen UI
+import type { RegisterRequest } from '../../../types/auth';
 import loginIllustration from '../../../assets/LoginIcon.svg';
 import bgImage from '../../../assets/bg-landingpage.svg';
 
 export default function RegisterFormSection() {
+    const navigate = useNavigate();
+    const { handleRegister, loading, error } = useRegister();
     const [isVisible, setIsVisible] = useState(false);
     const [step, setStep] = useState(1);
     const [isAgreed, setIsAgreed] = useState(false);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsVisible(true);
-        }, 50);
+    // Form state
+    const [formData, setFormData] = useState<RegisterRequest>({
+        username: '',
+        email: '',
+        password: '',
+        first_name: '',
+        last_name: '',
+        business: '',
+        domicile: ''
+    });
 
+    // Panggil hook notifikasi
+    const { 
+        notifMessage, 
+        isNotifVisible, 
+        notifType,
+        showNotification, 
+        closeNotification 
+    } = useNotification(error);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsVisible(true), 50);
         return () => clearTimeout(timer);
     }, []);
+   
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
+        setFormData(prev => ({ ...prev, [id]: value }));
+    };
+
+    const handleNextStep = () => {
+        if (!formData.username || !formData.email || !formData.password) {
+            showNotification('Silakan isi Username, Email, dan Password sebelum melanjutkan.', 'error');
+            return;
+        }
+        
+        setStep(2);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (!isAgreed) return;
+        
+        if (!formData.first_name || !formData.last_name || !formData.business || !formData.domicile) {
+            showNotification('Silakan isi semua data sebelum mendaftar.', 'error');
+            return;
+        }
+
+        try {
+            await handleRegister(formData);
+            
+            showNotification('Registrasi berhasil! Mengalihkan ke login...', 'success');
+            
+            setTimeout(() => {
+                navigate('/login');
+            }, 1500);
+            
+        } catch {
+            // error dari API sudah otomatis ditangani dan dimunculkan oleh useNotification
+        }
+    };
 
     return (
         <section 
@@ -23,7 +83,6 @@ export default function RegisterFormSection() {
             style={{ backgroundImage: `url(${bgImage})` }}
         >
             
-            {/* Animasi Melayang untuk Ilustrasi */}
             <style>
                 {`
                     @keyframes float-login {
@@ -38,9 +97,6 @@ export default function RegisterFormSection() {
             </style>
 
             <div className="mx-auto w-full max-w-6xl">
-                
-                {/* --- HEADER TITLE & LOGO (Tengah Atas) --- */}
-
 
                 {/* --- MAIN GRID LAYOUT (Form Kiri, Gambar Kanan) --- */}
                 <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-32 xl:gap-40">
@@ -67,8 +123,7 @@ export default function RegisterFormSection() {
                             />
                         </div>
 
-                        <form className="flex flex-col gap-3">
-                            {/* --- STEP 1 --- */}
+                        <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
                             {step === 1 && (
                                 <div className="flex flex-col gap-1 animate-in fade-in slide-in-from-left-4 duration-500">
                                     <div className="flex flex-col">
@@ -78,6 +133,9 @@ export default function RegisterFormSection() {
                                         <input 
                                             type="text" 
                                             id="username"
+                                            value={formData.username}
+                                            onChange={handleInputChange}
+                                            required
                                             className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                         />
                                     </div>
@@ -88,6 +146,9 @@ export default function RegisterFormSection() {
                                         <input 
                                             type="email" 
                                             id="email"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
+                                            required
                                             className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                         />
                                     </div>
@@ -98,12 +159,15 @@ export default function RegisterFormSection() {
                                         <input 
                                             type="password" 
                                             id="password"
+                                            value={formData.password}
+                                            onChange={handleInputChange}
+                                            required
                                             className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                         />
                                     </div>
                                     <button 
                                         type="button"
-                                        onClick={() => setStep(2)}
+                                        onClick={handleNextStep}
                                         className="mt-4 w-full rounded-full bg-primary py-3 text-base font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-primary-hover hover:shadow-lg focus:outline-hidden"
                                     >
                                         Selanjutnya
@@ -111,7 +175,6 @@ export default function RegisterFormSection() {
                                 </div>
                             )}
 
-                            {/* --- STEP 2 --- */}
                             {step === 2 && (
                                 <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-right-4 duration-500">
                                     <div className="flex w-full justify-between gap-3">
@@ -121,17 +184,23 @@ export default function RegisterFormSection() {
                                             </label>
                                             <input 
                                                 type="text" 
-                                                id="firstName"
+                                                id="first_name"
+                                                value={formData.first_name}
+                                                onChange={handleInputChange}
+                                                required
                                                 className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                             />
                                         </div>
                                         <div className="flex w-full flex-col">
-                                            <label className="mb-1 text-sm font-bold text-primary" htmlFor="lastName">
+                                            <label className="mb-1 text-sm font-bold text-primary" htmlFor="last_name">
                                                 Nama Akhir
                                             </label>
                                             <input 
                                                 type="text" 
-                                                id="lastName"
+                                                id="last_name"
+                                                value={formData.last_name}
+                                                onChange={handleInputChange}
+                                                required
                                                 className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                             />
                                         </div>
@@ -144,6 +213,9 @@ export default function RegisterFormSection() {
                                         <input 
                                             type="text" 
                                             id="business"
+                                            value={formData.business}
+                                            onChange={handleInputChange}
+                                            required
                                             className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                         />
                                     </div>
@@ -155,6 +227,9 @@ export default function RegisterFormSection() {
                                         <input 
                                             type="text" 
                                             id="domicile"
+                                            value={formData.domicile}
+                                            onChange={handleInputChange}
+                                            required
                                             className="w-full rounded-full border border-primary px-5 py-3 text-base text-dark focus:border-primary-hover focus:outline-hidden focus:ring-1 focus:ring-primary transition-all bg-white"
                                         />
                                     </div>
@@ -191,29 +266,26 @@ export default function RegisterFormSection() {
 
                                     <button 
                                         type="submit"
-                                        disabled={!isAgreed}
+                                        disabled={!isAgreed || loading}
                                         className="mt-4 w-full rounded-full bg-primary py-3 text-base font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-primary-hover hover:shadow-lg focus:outline-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:bg-primary"
                                     >
-                                        Daftar
+                                        {loading ? 'Mendaftar...' : 'Daftar'}
                                     </button>
                                 </div>
                             )}
                         </form>
 
 
-                        {/* Garis Pemisah "Atau" */}
                         <div className="my-6 flex items-center justify-center gap-4">
                             <span className="h-px w-full bg-gray-400/50"></span>
                             <span className="text-sm font-medium text-gray-500">Atau</span>
                             <span className="h-px w-full bg-gray-400/50"></span>
                         </div>
 
-                        {/* Tombol Login Google */}
                         <button 
                             type="button"
                             className="flex w-full items-center justify-center gap-3 rounded-full border border-primary bg-white py-3 transition-all hover:bg-light-bg focus:outline-hidden"
                         >
-                            {/* SVG Logo Google Resmi */}
                             <svg viewBox="0 0 24 24" className="h-5 w-5">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -224,13 +296,11 @@ export default function RegisterFormSection() {
                         </button>
 
                         
-                        {/* Link Login */}
                         <p className="mt-4 text-center text-sm font-medium text-dark">
                             Sudah Punya Akun? <a href="/login" className="font-bold text-[#F98C23] hover:underline">Login</a>
                         </p>
                     </div>
 
-                    {/* --- KOLOM KANAN: ILUSTRASI --- */}
                     <div className={`hidden lg:flex w-full items-center justify-center transition-all duration-700 delay-400 ease-out
                         ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}
                     `}>
@@ -242,6 +312,14 @@ export default function RegisterFormSection() {
                     </div>
                 </div>
             </div>
+
+            {/* --- PENEMPATAN NOTIFIKASI KANAN ATAS --- */}
+           <ToastNotification 
+                message={notifMessage} 
+                isVisible={isNotifVisible} 
+                onClose={closeNotification}
+                type={notifType}
+            />
         </section>
     );
 }

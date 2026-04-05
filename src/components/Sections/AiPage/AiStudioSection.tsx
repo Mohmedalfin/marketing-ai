@@ -90,13 +90,10 @@ const AiStudioSection = () => {
     };
 
     const styleOptions = [
-        'Modern',
-        'Minimalis',
-        '3D Render',
-        'Vintage',
-        'Cyberpunk',
-        'Profesional',
-        'Realistis'
+        'Makanan',
+        'Fashion',
+        'Elektronik',
+        'Minuman',
     ];
 
     const platformOptions = [
@@ -122,7 +119,7 @@ const AiStudioSection = () => {
     }, []);
 
     return (
-        <section ref={sectionRef} className="w-full py-20 px-6 md:px-12 lg:px-16 overflow-hidden">
+        <section ref={sectionRef} className="w-full py-10 px-6 md:px-12 lg:px-16 overflow-hidden">
             <div className="mx-auto max-w-7xl">
                 
                 {/* --- HEADER --- */}
@@ -198,7 +195,7 @@ const AiStudioSection = () => {
                                         onBlur={() => setTimeout(() => setIsStyleDropdownOpen(false), 200)}
                                         className="flex items-center gap-2 rounded-full bg-primary px-3 py-1 text-[10px] md:text-xs font-bold text-white focus:outline-hidden hover:bg-primary/90 transition-colors"
                                     >
-                                        STYLE : {selectedStyle} 
+                                        Kategori : {selectedStyle} 
                                         <svg className={`w-3 h-3 transition-transform duration-300 ${isStyleDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
                                     </button>
 

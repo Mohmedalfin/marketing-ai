@@ -8,6 +8,7 @@ import RegisterPageLayout from './components/Layouts/RegisterPagelayout'
 import DashboardPage from './pages/DashboardPage'
 import SchedulePageLayout from './components/Layouts/SchedulePageLayout'
 import ErrorPage from './pages/error'
+import ProtectedRoute from './components/Layouts/ProtectedRoute';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 export const router = createBrowserRouter([
@@ -26,17 +27,23 @@ export const router = createBrowserRouter([
         path: "/register",
         element: <RegisterPageLayout />,
       },
+      // Protected Routes (Halaman yang butuh login)
       {
-        path: "/ai",
-        element: <AiPageLayout />,
-      },
-      {
-        path: "/dashboard",
-        element: <DashboardPage />,
-      },
-      {
-        path: "/schedule",
-        element: <SchedulePageLayout />,
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: "/ai",
+            element: <AiPageLayout />,
+          },
+          {
+            path: "/dashboard",
+            element: <DashboardPage />,
+          },
+          {
+            path: "/schedule",
+            element: <SchedulePageLayout />,
+          },
+        ]
       },
       {
         path: "*",

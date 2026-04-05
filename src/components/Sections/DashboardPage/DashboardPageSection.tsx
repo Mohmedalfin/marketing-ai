@@ -12,7 +12,7 @@ import {
     X,
     Filter,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+
 import { motion, AnimatePresence } from "framer-motion";
 import type { Variants, Transition } from "framer-motion";
 
@@ -168,7 +168,7 @@ export default function DashboardPageSection() {
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            className="mx-auto w-full max-w-5xl px-4 pb-16 font-sans text-[#5C5C5C] sm:px-6 lg:px-8"
+            className="mx-auto w-full max-w-7xl px-4 pb-16 font-sans text-[#5C5C5C] sm:px-6 lg:px-8"
         >
             <motion.div
                 variants={itemVariants}
@@ -240,8 +240,8 @@ export default function DashboardPageSection() {
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={`relative whitespace-nowrap rounded-xl px-4 py-2 text-sm font-bold transition-colors duration-200 ${activeTab === tab
-                                        ? "text-white"
-                                        : "text-[#5C5C5C] hover:text-[#3FBA6B]"
+                                    ? "text-white"
+                                    : "text-[#5C5C5C] hover:text-[#3FBA6B]"
                                     }`}
                             >
                                 {activeTab === tab && (
@@ -356,18 +356,18 @@ export default function DashboardPageSection() {
 
                                         <span
                                             className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-[11px] font-extrabold shadow-sm ${post.status === "Diposting"
-                                                    ? "border-[#B7D8B5]/50 bg-[#E3F2E1] text-[#3FBA6B]"
-                                                    : post.status === "Terjadwal"
-                                                        ? "border-[#93C5FD]/50 bg-[#EBF5FF] text-[#3B82F6]"
-                                                        : "border-[#FDE68A]/50 bg-[#FEF3C7] text-[#D97706]"
+                                                ? "border-[#B7D8B5]/50 bg-[#E3F2E1] text-[#3FBA6B]"
+                                                : post.status === "Terjadwal"
+                                                    ? "border-[#93C5FD]/50 bg-[#EBF5FF] text-[#3B82F6]"
+                                                    : "border-[#FDE68A]/50 bg-[#FEF3C7] text-[#D97706]"
                                                 }`}
                                         >
                                             <span
                                                 className={`h-1.5 w-1.5 rounded-full ${post.status === "Diposting"
-                                                        ? "bg-[#3FBA6B]"
-                                                        : post.status === "Terjadwal"
-                                                            ? "bg-[#3B82F6]"
-                                                            : "bg-[#D97706]"
+                                                    ? "bg-[#3FBA6B]"
+                                                    : post.status === "Terjadwal"
+                                                        ? "bg-[#3B82F6]"
+                                                        : "bg-[#D97706]"
                                                     }`}
                                             ></span>
                                             {post.status}
