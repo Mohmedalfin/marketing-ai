@@ -10,7 +10,6 @@ const SchedulePageLayout = () => {
             <CustomCursor />
             <Navbar variant="app" />
             
-            {/* Background Layer (Fixed height to prevent stretching) */}
             <div 
                 className="absolute inset-x-0 top-0 h-screen min-h-[800px] bg-cover bg-top bg-no-repeat pointer-events-none"
                 style={{ backgroundImage: `url(${bgLandingPage})` }}

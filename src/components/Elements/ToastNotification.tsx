@@ -24,7 +24,7 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({
     const btnClass = isError ? 'text-red-400 hover:bg-red-100 hover:text-red-600 focus:ring-red-500' : 'text-green-400 hover:bg-green-100 hover:text-green-600 focus:ring-green-500';
 
     return (
-        <div className="fixed top-6 right-6 z-50 animate-in fade-in slide-in-from-top-4 slide-in-from-right-8 duration-300">
+        <div className="fixed top-24 right-6 z-[100] animate-in fade-in slide-in-from-top-4 slide-in-from-right-8 duration-300">
             <div className={`flex max-w-sm items-center justify-between gap-4 rounded-lg border-l-4 p-4 shadow-xl ${bgClass}`}>
                 
                 <div className="flex items-center gap-3">

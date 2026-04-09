@@ -4,6 +4,7 @@ import {
     STYLE_OPTIONS, 
     PLATFORM_OPTIONS 
 } from '../../../hooks/useAiStudioController';
+import { ToastNotification } from '../../Elements/ToastNotification';
 
 const AiStudioSection = () => {
     const controller = useAiStudioController();
@@ -24,7 +25,8 @@ const AiStudioSection = () => {
         setStyle,
         setTitle,
         setScheduledDate,
-        setScheduledTime
+        setScheduledTime,
+        hideToast
     } = controller;
 
     // --- SUB RENDERING FUNCTIONS ---
@@ -302,6 +304,12 @@ const AiStudioSection = () => {
                     </div>
                 </div>
             </div>
+            <ToastNotification 
+                message={uiState.toast?.message || ''}
+                isVisible={uiState.toast?.isVisible || false}
+                onClose={hideToast}
+                type={uiState.toast?.type || 'success'}
+            />
         </section>
     );
 };

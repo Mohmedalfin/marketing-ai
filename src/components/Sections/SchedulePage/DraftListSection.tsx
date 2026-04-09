@@ -1,18 +1,10 @@
 import { useState, useEffect } from 'react';
-import draftImg1 from '../../../assets/ai-poster-preview.svg';
 import headerAsset from '../../../assets/faq-illustration.svg';
+import { useScheduleController } from '../../../hooks/useScheduleController';
+import type { ScheduleItem } from '../../../types/schedule';
+import { ToastNotification } from '../../Elements/ToastNotification';
 
-export interface Draft {
-    id: number;
-    status: string;      
-    platform: string;     
-    title: string;
-    description: string;
-    date: string;         
-    time: string;         
-    image: string;        
-}
-
+// Nanti akan dipindah/ubah saat kita menggarap PUT Edit
 export interface EditDraftPayload {
     title: string;
     description: string;
@@ -20,92 +12,25 @@ export interface EditDraftPayload {
     time: string;
 }
 
-const DUMMY_DRAFTS: Draft[] = [
-    {
-        id: 1,
-        status: 'Draft',
-        platform: 'Instagram',
-        title: 'Promo Spesial Ramadhan Segera Hadir',
-        description: 'Jangan lewatkan penawaran menarik kami menarik kami, Jangan lewatkan penawaran menarik kami menarik kami. #instagram #Aigency #tamaddan #proots',
-        date: '2026-03-19',
-        time: '15:45',
-        image: draftImg1,
-    },
-    {
-        id: 2,
-        status: 'Draft',
-        platform: 'TikTok',
-        title: 'Koleksi Sepatu Kets Terbaru 2026',
-        description: 'Tingkatkan gaya kasualmu dengan koleksi terbaru kami. Dapatkan diskon 20% khusus minggu ini! #SepatuKets #Diskon',
-        date: '2026-03-20',
-        time: '10:00',
-        image: draftImg1,
-    },
-    {
-        id: 3,
-        status: 'Draft',
-        platform: 'Instagram',
-        title: 'Promo Spesial Ramadhan Segera Hadir',
-        description: 'Jangan lewatkan penawaran menarik kami menarik kami, Jangan lewatkan penawaran menarik kami menarik kami. #instagram #Aigency #tamaddan #proots',
-        date: '2026-03-19',
-        time: '15:45',
-        image: draftImg1,
-    },
-    {
-        id: 4,
-        status: 'Draft',
-        platform: 'TikTok',
-        title: 'Koleksi Sepatu Kets Terbaru 2026',
-        description: 'Tingkatkan gaya kasualmu dengan koleksi terbaru kami. Dapatkan diskon 20% khusus minggu ini! #SepatuKets #Diskon',
-        date: '2026-03-20',
-        time: '10:00',
-        image: draftImg1,
-    },
-    {
-        id: 5,
-        status: 'Draft',
-        platform: 'Instagram',
-        title: 'Promo Spesial Ramadhan Segera Hadir',
-        description: 'Jangan lewatkan penawaran menarik kami menarik kami, Jangan lewatkan penawaran menarik kami menarik kami. #instagram #Aigency #tamaddan #proots',
-        date: '2026-03-19',
-        time: '15:45',
-        image: draftImg1,
-    },
-    {
-        id: 6,
-        status: 'Draft',
-        platform: 'TikTok',
-        title: 'Koleksi Sepatu Kets Terbaru 2026',
-        description: 'Tingkatkan gaya kasualmu dengan koleksi terbaru kami. Dapatkan diskon 20% khusus minggu ini! #SepatuKets #Diskon',
-        date: '2026-03-20',
-        time: '10:00',
-        image: draftImg1,
-    },
-];
-
-const draftService = {
-    fetchAll: async (): Promise<Draft[]> => {
-        return new Promise((resolve) => setTimeout(() => resolve(DUMMY_DRAFTS), 500));
-    },
-
-    update: async (id: number, payload: EditDraftPayload): Promise<Draft> => {
-        return new Promise((resolve) =>
-            setTimeout(() => resolve({ ...DUMMY_DRAFTS.find((d) => d.id === id)!, ...payload }), 300)
-        );
-    },
-
-    remove: async (id: number): Promise<void> => {
-        console.log("Deleting draft with id:", id);
-        return new Promise((resolve) => setTimeout(resolve, 300));
-    },
+const formatDisplayDate = (isoStr: string): string => {
+    if (!isoStr) return '-';
+    try {
+        const dateObj = new Date(isoStr);
+        const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        return `${dateObj.getDate()} ${months[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+    } catch {
+        return '-';
+    }
 };
 
-const formatDisplayDate = (dateStr: string): string => {
-    if (!dateStr) return '-';
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-    const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-    const [y, m, d] = dateStr.split('-').map(Number);
-    return `${d} ${months[m - 1]} ${y}`;
+const formatDisplayTime = (isoStr: string): string => {
+    if (!isoStr) return '-';
+    try {
+        const dateObj = new Date(isoStr);
+        return dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+    } catch {
+        return '-';
+    }
 };
 
 export default function DraftListSection() {
@@ -114,49 +39,60 @@ export default function DraftListSection() {
     const [searchQuery, setSearchQuery] = useState('');
     const [editingId, setEditingId]     = useState<number | null>(null);
     const [editForm, setEditForm]       = useState<EditDraftPayload>({ title: '', description: '', date: '', time: '' });
+    const [isSaving, setIsSaving]       = useState(false);
 
-    const [drafts, setDrafts]     = useState<Draft[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError]         = useState<string | null>(null);
+    const { schedules: drafts, isLoading, error, updateSchedule, deleteSchedule, toast, showToast, hideToast } = useScheduleController();
 
     useEffect(() => {
         const timer = setTimeout(() => setIsVisible(true), 100);
         return () => clearTimeout(timer);
     }, []);
 
-    useEffect(() => {
-        const loadDrafts = async () => {
-            try {
-                setIsLoading(true);
-                setError(null);
-                const data = await draftService.fetchAll();
-                setDrafts(data);
-            } catch {
-                setError('Gagal memuat daftar draft. Silakan coba lagi.');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        loadDrafts();
-    }, []);
-
-    const handleEditClick = (draft: Draft) => {
+    const handleEditClick = (draft: ScheduleItem) => {
         setEditingId(draft.id);
-        setEditForm({ title: draft.title, description: draft.description, date: draft.date, time: draft.time });
+        
+        const rawScheduledTime = draft.scheduled_time || '';
+        const [dDate, dTimeRaw] = rawScheduledTime.split('T');
+        
+        const dateInput = dDate || new Date().toISOString().split('T')[0];
+        const timeInput = dTimeRaw ? dTimeRaw.slice(0, 5) : '00:00';
+
+        setEditForm({ 
+            title: draft.title || '', 
+            description: draft.caption || '', 
+            date: dateInput, 
+            time: timeInput 
+        });
     };
 
     const handleSaveEdit = async (id: number) => {
-        setDrafts((prev) =>
-            prev.map((d) => (d.id === id ? { ...d, ...editForm } : d))
-        );
-        setEditingId(null);
+        if (!editForm.title.trim()) {
+            return showToast("Judul tidak boleh kosong.", 'error');
+        }
 
         try {
-            await draftService.update(id, editForm);
-        } catch {
-            setError('Gagal menyimpan perubahan. Silakan coba lagi.');
-            const original = await draftService.fetchAll();
-            setDrafts(original);
+            setIsSaving(true);
+            const payloadTime = `${editForm.date}T${editForm.time}:00`;
+            
+            const payload = {
+                title: editForm.title,
+                caption: editForm.description,
+                scheduled_time: payloadTime
+            };
+
+            const result = await updateSchedule(id, payload);
+            
+            if (result.success) {
+                setEditingId(null);
+                showToast("Berhasil menyimpan perubahan jadwal!", 'success');
+            } else {
+                showToast(result.error || "Gagal menyimpan", 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            showToast("Kesalahan format waktu atau jaringan.", 'error');
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -164,22 +100,24 @@ export default function DraftListSection() {
 
     const handleDelete = async (id: number) => {
         if (!window.confirm('Yakin ingin menghapus draft ini?')) return;
-
-        setDrafts((prev) => prev.filter((d) => d.id !== id));
-
+        
         try {
-            await draftService.remove(id);
-        } catch {
-            setError('Gagal menghapus draft. Silakan coba lagi.');
-            const original = await draftService.fetchAll();
-            setDrafts(original);
+            const result = await deleteSchedule(id);
+            if (result.success) {
+                showToast("Draft berhasil dihapus!", 'success');
+            } else {
+                showToast(result.error || "Gagal menghapus draft.", 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            showToast("Kesalahan jaringan saat menghapus.", 'error');
         }
     };
 
     const filteredDrafts = drafts.filter(
         (d) =>
-            d.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            d.description.toLowerCase().includes(searchQuery.toLowerCase())
+            (d.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (d.caption || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -276,7 +214,7 @@ export default function DraftListSection() {
                                 >
                                     {/* Gambar Background */}
                                     <img 
-                                        src={draft.image} 
+                                        src={draft.image_url} 
                                         alt={draft.title} 
                                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                         style={{
@@ -352,15 +290,22 @@ export default function DraftListSection() {
                                                 <div className="flex items-center gap-2 mt-1 w-full">
                                                     <button
                                                         onClick={handleCancelEdit}
-                                                        className="flex-1 rounded-lg bg-gray-200 px-3 py-2 text-[10px] font-bold text-gray-700 transition-all hover:bg-gray-300 focus:outline-none"
+                                                        disabled={isSaving}
+                                                        className={`flex-1 rounded-lg bg-gray-200 px-3 py-2 text-[10px] font-bold text-gray-700 transition-all hover:bg-gray-300 focus:outline-none ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                     >
                                                         Batal
                                                     </button>
                                                     <button
                                                         onClick={() => handleSaveEdit(draft.id)}
-                                                        className="flex-1 rounded-lg bg-primary px-3 py-2 text-[10px] font-bold text-white transition-all hover:bg-primary-hover focus:outline-none shadow-md"
+                                                        disabled={isSaving}
+                                                        className={`flex-1 rounded-lg bg-primary px-3 py-2 text-[10px] font-bold text-white transition-all shadow-md focus:outline-none flex justify-center items-center ${isSaving ? 'opacity-70 cursor-not-allowed' : 'hover:bg-primary-hover'}`}
                                                     >
-                                                        Simpan
+                                                        {isSaving ? (
+                                                            <svg className="animate-spin h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                            </svg>
+                                                        ) : "Simpan"}
                                                     </button>
                                                 </div>
                                             </div>
@@ -371,7 +316,7 @@ export default function DraftListSection() {
                                                         {draft.title}
                                                     </h3>
                                                     <p
-                                                        className="text-[11px] md:text-xs font-medium text-white/80 leading-relaxed drop-shadow-sm"
+                                                        className="text-[11px] md:text-xs font-medium text-white/80 leading-relaxed drop-shadow-sm break-words overflow-hidden"
                                                         style={{
                                                             display: '-webkit-box',
                                                             WebkitLineClamp: 2,
@@ -379,16 +324,16 @@ export default function DraftListSection() {
                                                             overflow: 'hidden',
                                                         }}
                                                     >
-                                                        {draft.description}
+                                                        {draft.caption || draft.title || "Tanpa keterangan"}
                                                     </p>
                                                     {/* Tanggal & Waktu */}
                                                     <div className="flex items-center gap-1.5 text-[10px] font-medium text-white/70 mt-1">
-                                                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                        <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                                             <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                         </svg>
-                                                        <span>{formatDisplayDate(draft.date)}</span>
+                                                        <span className="truncate">{formatDisplayDate(draft.scheduled_time)}</span>
                                                         <span className="opacity-50">|</span>
-                                                        <span>{draft.time}</span>
+                                                        <span className="shrink-0">{formatDisplayTime(draft.scheduled_time)}</span>
                                                     </div>
                                                 </div>
                                                 
@@ -409,6 +354,13 @@ export default function DraftListSection() {
                     </div>
                 )}
             </div>
+            
+            <ToastNotification 
+                message={toast.message}
+                isVisible={toast.isVisible}
+                onClose={hideToast}
+                type={toast.type}
+            />
         </section>
     );
 }

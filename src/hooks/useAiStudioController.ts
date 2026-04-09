@@ -43,11 +43,18 @@ const getPreviewUrl = (imgBase64: string | null) => {
 // 3. IMPLEMENTASI CUSTOM HOOK UNTUK LOGIKA UTAMA
 export const useAiStudioController = () => {
     // 2. CONSOLIDATION STATE: uiState
-    const [uiState, setUiState] = useState({
+    const [uiState, setUiState] = useState<{
+        isVisible: boolean;
+        isStyleDropdownOpen: boolean;
+        isPlatformDropdownOpen: boolean;
+        isPublishing: boolean;
+        toast: { isVisible: boolean; message: string; type: 'success' | 'error' };
+    }>({
         isVisible: false,
         isStyleDropdownOpen: false,
         isPlatformDropdownOpen: false,
         isPublishing: false,
+        toast: { isVisible: false, message: '', type: 'success' }
     });
 
     // 2. CONSOLIDATION STATE: formData
@@ -133,6 +140,13 @@ export const useAiStudioController = () => {
         }));
     };
 
+    const showToast = (message: string, type: 'success' | 'error') => {
+        setUiState(prev => ({ ...prev, toast: { isVisible: true, message, type } }));
+        setTimeout(() => hideToast(), 3000);
+    };
+
+    const hideToast = () => setUiState(prev => ({ ...prev, toast: { ...prev.toast, isVisible: false } }));
+
     // Form Handlers
     const setStyle = (style: string) => {
         setFormData(prev => ({ ...prev, style }));
@@ -168,7 +182,7 @@ export const useAiStudioController = () => {
     // Actions
     const handleGenerate = async () => {
         if (!formData.imageFile && !formData.persistedBase64) {
-            alert("Silakan upload gambar produk terlebih dahulu untuk memulai keajaiban AI!");
+            showToast("Silakan upload gambar produk terlebih dahulu untuk memulai!", 'error');
             return;
         }
 
@@ -191,39 +205,42 @@ export const useAiStudioController = () => {
                 caption: res.data.caption
             }));
             setFormData(prev => ({ ...prev, persistedBase64: base64Str }));
+            showToast("Generasi poster AI berhasil dilakukan!", 'success');
+        } else if (res?.success === false) {
+            showToast("Terjadi kesalahan saat melakukan generasi poster", 'error');
         }
     };
 
     const handlePublish = async () => {
-        if (!formData.title) return alert("Judul postingan tidak boleh kosong.");
-        if (!aiStudio.generatedPoster || !aiStudio.captionText) return alert("Anda harus melakukan generate AI terlebih dahulu.");
+        if (!formData.title) return showToast("Judul postingan tidak boleh kosong.", 'error');
+        if (!aiStudio.generatedPoster || !aiStudio.captionText) return showToast("Anda harus melakukan generate AI terlebih dahulu.", 'error');
         
         try {
             setUiState(prev => ({ ...prev, isPublishing: true }));
             
-            // Format time
+            // Format time - Kirim strings mentah tanpa toISOString() 
+            // agar backend menerimanya secara naïve localtime.
             const dateTimeString = `${formData.scheduledDate}T${formData.scheduledTime}:00`;
-            const isoString = new Date(dateTimeString).toISOString();
             
             const payload = {
                 title: formData.title,
                 caption: aiStudio.captionText,
                 image_url: aiStudio.generatedPoster,
                 platform: formData.platforms[0] || "Instagram",
-                scheduled_time: isoString
+                scheduled_time: dateTimeString
             };
             
             await schedulePostAPI(payload);
             
             // Berhasil
-            alert("Jadwal posting berhasil dikirim ke backend!");
+            showToast("Jadwal posting berhasil dikirim ke backend!", 'success');
             
             // Reset setelah sukses
             handleReset();
             
         } catch (error) {
             console.error(error);
-            alert(error instanceof Error ? error.message : "Terjadi kesalahan sistem saat mempublikasikan data.");
+            showToast(error instanceof Error ? error.message : "Terjadi kesalahan sistem.", 'error');
         } finally {
             setUiState(prev => ({ ...prev, isPublishing: false }));
         }
@@ -270,5 +287,6 @@ export const useAiStudioController = () => {
         setTitle,
         setScheduledDate,
         setScheduledTime,
+        hideToast,
     };
 };
