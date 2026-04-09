@@ -63,8 +63,8 @@ export const schedulePostAPI = async (
   
   let response;
   try {
-    console.log(`Sending POST to ${ENV.API_URL}/api/v1/schedule with payload:`, payload);
-    response = await fetch(`${ENV.API_URL}/api/v1/schedule`, {
+    console.log(`Sending POST to ${ENV.API_URL}/api/v1/schedule/ with payload:`, payload);
+    response = await fetch(`${ENV.API_URL}/api/v1/schedule/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
