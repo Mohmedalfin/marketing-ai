@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import aiHeroIllustration from '../../../assets/ai-hero.svg';
-import { SparklesText } from "@/components/ui/sparkles-text";
 
 const AiHeroSection = () => {
     const [isVisible, setIsVisible] = useState(false);
@@ -46,7 +45,7 @@ const AiHeroSection = () => {
             </style>
 
             {/* MAIN CARD: Kotak putih besar dengan shadow */}
-            <div className={`mx-auto w-full max-w-7xl  rounded-2xl p-8 sm:p-10 lg:px-15 lg:py-6 shadow-[0_8px_40px_rgb(0,0,0,0.06)] transition-all duration-1000 ease-out
+            <div className={`mx-auto w-full max-w-7xl bg-white rounded-2xl p-8 sm:p-10 lg:px-15 lg:py-6 shadow-[0_8px_40px_rgb(0,0,0,0.06)] transition-all duration-1000 ease-out
                 ${isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-16 opacity-0 scale-95'}
             `}>
                 <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
