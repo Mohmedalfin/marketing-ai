@@ -3,6 +3,7 @@ import headerAsset from '../../../assets/faq-illustration.svg';
 import { useScheduleController } from '../../../hooks/useScheduleController';
 import type { ScheduleItem } from '../../../types/schedule';
 import { ToastNotification } from '../../Elements/ToastNotification';
+import { confirmAction } from '../../../utils/swal';
 
 // Nanti akan dipindah/ubah saat kita menggarap PUT Edit
 export interface EditDraftPayload {
@@ -99,7 +100,8 @@ export default function DraftListSection() {
     const handleCancelEdit = () => setEditingId(null);
 
     const handleDelete = async (id: number) => {
-        if (!window.confirm('Yakin ingin menghapus draft ini?')) return;
+        const isConfirmed = await confirmAction('Hapus Draft?', 'Draft ini akan dihapus permanen dan tidak bisa dikembalikan.', 'Ya, Hapus');
+        if (!isConfirmed) return;
         
         try {
             const result = await deleteSchedule(id);

@@ -247,21 +247,19 @@ export const useAiStudioController = () => {
     };
 
     const handleReset = () => {
-        if (confirm("Ingin membersihkan semua data di studio?")) {
-            localStorage.removeItem('ai_studio_last_result');
-            setFormData({
-                title: '',
-                style: 'Fashion',
-                platforms: ['Instagram'],
-                imagePreview: null,
-                imageFile: null,
-                persistedBase64: null,
-                scheduledDate: new Date().toISOString().split('T')[0],
-                scheduledTime: '12:00',
-            });
-            if (instructionRef.current) instructionRef.current.value = "";
-            restoreResult(null, "");
-        }
+        localStorage.removeItem('ai_studio_last_result');
+        setFormData({
+            title: '',
+            style: 'Fashion',
+            platforms: ['Instagram'],
+            imagePreview: null,
+            imageFile: null,
+            persistedBase64: null,
+            scheduledDate: new Date().toISOString().split('T')[0],
+            scheduledTime: '12:00',
+        });
+        if (instructionRef.current) instructionRef.current.value = "";
+        restoreResult(null, "");
     };
 
     return {

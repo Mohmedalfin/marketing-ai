@@ -5,6 +5,7 @@ import {
     PLATFORM_OPTIONS 
 } from '../../../hooks/useAiStudioController';
 import { ToastNotification } from '../../Elements/ToastNotification';
+import { confirmAction } from '../../../utils/swal';
 
 const AiStudioSection = () => {
     const controller = useAiStudioController();
@@ -47,7 +48,14 @@ const AiStudioSection = () => {
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg md:text-xl font-bold text-primary">AI STUDIO PINTAR</h2>
                 <div className="flex gap-2">
-                    <button onClick={handleReset} className="p-2 rounded-full border border-gray-200 text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all focus:outline-hidden" title="Bersihkan Semua Data">
+                    <button 
+                        onClick={async () => {
+                            const confirmed = await confirmAction('Bersihkan Form?', 'Semua data dan gambar yang telah diunggah akan dihapus.', 'Ya, Bersihkan');
+                            if (confirmed) handleReset();
+                        }} 
+                        className="p-2 rounded-full border border-gray-200 text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all focus:outline-hidden" 
+                        title="Bersihkan Semua Data"
+                    >
                         <TrashIcon />
                     </button>
                     <button 
@@ -276,7 +284,10 @@ const AiStudioSection = () => {
             </div>
 
             <button 
-                onClick={handlePublish}
+                onClick={async () => {
+                    const confirmed = await confirmAction('Jadwalkan Postingan?', 'Konfirmasi bahwa desain dan caption sudah sesuai.', 'Ya, Jadwalkan');
+                    if (confirmed) handlePublish();
+                }}
                 disabled={uiState.isPublishing}
                 className={`mt-auto pt-6 w-full focus:outline-hidden mb-4 transition-all duration-300 ${uiState.isPublishing ? 'opacity-70 cursor-not-allowed' : ''}`}
             >

@@ -23,6 +23,12 @@
   body {
     font-family: var(--font-poppins);
     color: var(--color-dark);
-    background-color: var(--color-white);
+    background-color: var(--color-light-bg);
+  }
+
+  /* Prevent SweetAlert from shifting the body and fixed elements like Navbar */
+  body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
+    overflow-y: scroll !important;
+    padding-right: 0 !important;
   }
 }
