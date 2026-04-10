@@ -6,8 +6,7 @@ import {
     Heart,
     ChevronLeft,
     ChevronRight,
-    X,
-    Filter
+    X
 } from "lucide-react";
 
 import headerAsset from "../../../assets/faq-illustration.svg";
