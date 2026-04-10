@@ -201,7 +201,7 @@ export default function DashboardPageSection() {
                         <motion.div
                             key={index}
                             variants={itemVariants}
-                            whileHover={{ scale: 1.02, y: -4 }}
+                            whileHover={{ y: -4, boxShadow: "0 10px 25px rgba(0,0,0,0.05)" }}
                             transition={cardTransition}
                             className="group relative overflow-hidden rounded-3xl border border-[#D9DED8] bg-white p-6 shadow-sm transition-all hover:shadow-md"
                         >
@@ -287,9 +287,10 @@ export default function DashboardPageSection() {
 
             <motion.div
                 variants={containerVariants}
-                className="flex min-h-[300px] flex-col gap-4"
+                className="flex min-h-[450px] flex-col gap-4"
+                layout
             >
-                <AnimatePresence mode="popLayout">
+                <AnimatePresence mode="wait">
                     {filteredPosts.length > 0 ? (
                         filteredPosts.map((post) => (
                             <motion.div
@@ -300,10 +301,11 @@ export default function DashboardPageSection() {
                                 exit={{
                                     opacity: 0,
                                     scale: 0.95,
-                                    transition: { duration: 0.2 },
+                                    y: -10,
+                                    transition: { duration: 0.15 },
                                 }}
                                 whileHover={{
-                                    scale: 1.01,
+                                    y: -2,
                                     backgroundColor: "#ffffff",
                                     boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
                                 }}
