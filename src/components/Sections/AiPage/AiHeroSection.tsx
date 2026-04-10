@@ -45,7 +45,7 @@ const AiHeroSection = () => {
             </style>
 
             {/* MAIN CARD: Kotak putih besar dengan shadow */}
-            <div className={`mx-auto w-full max-w-7xl bg-white rounded-2xl p-8 sm:p-10 lg:px-12 lg:py-8 shadow-[0_8px_40px_rgb(0,0,0,0.06)] transition-all duration-1000 ease-out
+            <div className={`mx-auto w-full max-w-7xl bg-white rounded-2xl p-8 sm:p-10 lg:px-15 lg:py-6 shadow-[0_8px_40px_rgb(0,0,0,0.06)] transition-all duration-1000 ease-out
                 ${isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-16 opacity-0 scale-95'}
             `}>
                 <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
@@ -59,11 +59,6 @@ const AiHeroSection = () => {
                             No. Repot<br />
                             No. Rempong
                         </h1>
-                        
-                        {/* Subheadline Hijau */}
-                        <p className="text-base md:text-lg lg:text-xl font-bold text-primary leading-snug">
-                            Konten Sosmed Berjalan Otomatis. AiGency Urus Postingan, Anda Fokus Bisnis.
-                        </p>
 
                         {/* Tags Pill (#fyp, dll) */}
                         <div className="flex flex-wrap items-center gap-3 mt-2">
@@ -82,14 +77,14 @@ const AiHeroSection = () => {
                     </div>
 
                     {/* --- KOLOM KANAN: Ilustrasi (Animasi Bergerak Terus Menerus) --- */}
-                    <div className={`relative hidden md:none-hidden lg:flex w-full items-center justify-center lg:justify-end transition-all duration-1000 delay-300 ease-out
+                    <div className={`mt-1relative hidden md:none-hidden lg:flex w-full items-center justify-center lg:justify-end transition-all duration-1000 delay-300 ease-out
                         ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-16 opacity-0'}
                     `}>
                         {/* Gambar ini akan melayang-layang tiada henti karena class animate-float-dynamic */}
                         <img 
                             src={aiHeroIllustration} 
                             alt="AI Content Generation" 
-                            className="w-full max-w-[350px] lg:max-w-[550px] object-contain animate-float-dynamic drop-shadow-xl"
+                            className="w-full max-w-[350px] lg:max-w-[520px] object-contain animate-float-dynamic drop-shadow-xl"
                         />
                     </div>
 
