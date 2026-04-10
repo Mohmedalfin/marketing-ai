@@ -207,7 +207,7 @@ export default function DashboardPageSection() {
             <motion.div variants={itemVariants} className="sticky top-0 z-10 bg-[#FAF9F5]/90 backdrop-blur-xl py-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:bg-transparent sm:backdrop-blur-none sm:py-0 mb-6 transition-all duration-300">
                 <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
                     {/* Search Input */}
-                    <div className="flex w-full sm:w-[400px] md:w-[940px] items-center justify-between rounded-full bg-white px-5 py-5 shadow-sm focus-within:ring-2 focus-within:ring-[#39B772]/50 transition-all border border-[#D9DED8]/70">
+                    <div className="flex w-full sm:w-[400px] md:w-[910px] items-center justify-between rounded-full bg-white px-5 py-5 shadow-sm focus-within:ring-2 focus-within:ring-[#39B772]/50 transition-all border border-[#D9DED8]/70">
                         <div className="flex flex-1 items-center gap-3">
                             <Search className="h-5 w-5 text-gray-400 shrink-0" strokeWidth={2.5} />
                             <input
