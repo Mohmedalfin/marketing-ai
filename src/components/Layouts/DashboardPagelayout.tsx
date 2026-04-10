@@ -14,7 +14,7 @@ export default function DashboardPageLayout() {
                 style={{ backgroundImage: `url(${bgLandingPage})` }}
             />
 
-            <main className="flex-1 w-full mt-32 md:mt-36 relative z-10">
+            <main className="flex-1 w-full mt-16 relative z-10">
                 <DashboardPageSection />
             </main>
             <FooterSection />

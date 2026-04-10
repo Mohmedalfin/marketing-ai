@@ -1,69 +1,32 @@
-import { useState, useMemo } from "react";
 import {
     Clock,
-    ClipboardList,
-    CheckSquare,
+    Calendar,
+    Hash,
     Search,
     Heart,
     ChevronLeft,
     ChevronRight,
-    Calendar,
-    Hash,
     X,
     Filter
 } from "lucide-react";
 
+import headerAsset from "../../../assets/faq-illustration.svg";
+import { FacebookIcon, InstagramIcon, TikTokIcon } from '../../Elements/icons/SosialMedia';
+
 import { motion, AnimatePresence } from "framer-motion";
 import type { Variants } from "framer-motion";
 
-const stats = [
-    { title: "Konten Terjadwal", value: 12, icon: Clock, color: "text-blue-500", bg: "bg-blue-100" },
-    { title: "Draft Aktif", value: 5, icon: ClipboardList, color: "text-yellow-500", bg: "bg-yellow-100" },
-    { title: "Sudah Diposting", value: 8, icon: CheckSquare, color: "text-green-500", bg: "bg-green-100" },
-];
-
-const initialPosts = [
-    {
-        id: 1,
-        title: "Promo Spesial Ramadhan Segera Hadir",
-        date: "19 Maret 2026",
-        time: "15:45",
-        likes: 135,
-        status: "Diposting",
-        platform: "Instagram",
-        tags: ["Promo", "Ramadhan"]
-    },
-    {
-        id: 2,
-        title: "Koleksi Terbaru Sepatu Lari Pria",
-        date: "18 Maret 2026",
-        time: "10:30",
-        likes: 210,
-        status: "Terjadwal",
-        platform: "Instagram",
-        tags: ["Koleksi Baru", "Sepatu"]
-    },
-    {
-        id: 3,
-        title: "Tips Produktivitas Ala Kreator",
-        date: "15 Maret 2026",
-        time: "19:00",
-        likes: 450,
-        status: "Diposting",
-        platform: "Instagram",
-        tags: ["Tips", "Edukasi"]
-    },
-    {
-        id: 4,
-        title: "Behind The Scene Pembuatan Produk",
-        date: "12 Maret 2026",
-        time: "13:00",
-        likes: 320,
-        status: "Draft",
-        platform: "TikTok",
-        tags: ["BTS", "Produk"]
-    }
-];
+import { useDashboardController } from "../../../hooks/useDashboardController";
+import {
+    AreaChart,
+    Area,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    Legend
+} from 'recharts';
 
 const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -82,90 +45,206 @@ const itemVariants: Variants = {
     }
 };
 
+const TABS = ["Semua", "Diposting", "Draft"] as const;
+
 export default function DashboardPageSection() {
-    const [searchQuery, setSearchQuery] = useState("");
-    const [activeTab, setActiveTab] = useState("Semua");
-
-    const tabs = ["Semua", "Diposting", "Terjadwal", "Draft"];
-
-    const filteredPosts = useMemo(() => {
-        return initialPosts.filter(post => {
-            const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                  post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-            const matchesTab = activeTab === "Semua" || post.status === activeTab;
-            return matchesSearch && matchesTab;
-        });
-    }, [searchQuery, activeTab]);
+    const {
+        isLoading,
+        chartData,
+        summaryStats,
+        filteredPosts,
+        activeTab,
+        setActiveTab,
+        searchQuery,
+        setSearchQuery,
+    } = useDashboardController();
 
     return (
-        <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="show"
-            className="w-full px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto font-sans pb-16 text-[#5C5C5C]"
-        >
-            {/* Header Area */}
-            <motion.div variants={itemVariants} className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <div className="inline-flex items-center rounded-full border border-[#D9DED8] bg-[#F7F7F5] px-2.5 py-1 text-xs font-semibold text-[#3FBA6B] mb-3">
-                        <span className="flex h-2 w-2 rounded-full bg-[#3FBA6B] mr-2 animate-pulse"></span>
-                        Dashboard Kreator
+        <section className="w-full px-6 md:px-12 lg:px-16 pb-16 pt-20 font-sans text-[#5C5C5C]">
+            <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+                className="mx-auto max-w-7xl"
+            >
+            {/* --- Header Area --- */}
+            <motion.div variants={itemVariants} className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div className="flex items-start gap-5 md:gap-6">
+                    <div className="hidden sm:flex h-20 w-20 md:h-[120px] md:w-[120px] shrink-0 overflow-hidden">
+                        <img 
+                            src={headerAsset} 
+                            alt="Dashboard Dekorasi" 
+                            className="h-full w-full object-cover" 
+                        />
                     </div>
-                    <h1 className="text-4xl font-extrabold text-[#5C5C5C] tracking-tight">
-                        Manajemen Konten
-                    </h1>
-                    <p className="mt-2 text-base font-medium text-[#5C5C5C]/70">
-                        Pantau dan kelola semua aktivitas konten Anda di satu tempat.
-                    </p>
+
+                    <div className="flex flex-col justify-center">
+                        <div className="flex flex-wrap items-center gap-3 mb-2 md:mb-3">
+                            <h1 className="text-4xl md:text-5xl font-extrabold text-[#545454] tracking-tight">
+                                Ringkasan Aktivitas
+                            </h1>
+                            
+                            <span className="mt-3 flex items-center gap-1.5 rounded-full bg-[#39B772]/10 px-3 py-1 text-xs font-bold text-[#39B772] border border-[#39B772]/20">
+                                <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#39B772] opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#39B772]"></span>
+                                </span>
+                                Indikator Aktif
+                            </span>
+                        </div>
+                        
+                        <p className="text-sm md:text-base font-medium text-[#545454]/70 max-w-2xl leading-relaxed">
+                            Pusat komando Anda untuk memantau performa konten, melihat kalender produksi, serta mengevaluasi karya terbaru dari AI Studio.
+                        </p>
+                    </div>
                 </div>
             </motion.div>
 
-            {/* Stats */}
-            <motion.div variants={containerVariants} className="grid gap-5 md:grid-cols-3 mb-10">
-                {stats.map((item, index) => {
-                    const Icon = item.icon;
-                    return (
-                        <motion.div
-                            key={index}
-                            variants={itemVariants}
-                            whileHover={{ scale: 1.02, y: -4 }}
-                            transition={{ type: "spring", stiffness: 300 } as any}
-                            className="relative overflow-hidden rounded-3xl border border-[#D9DED8] bg-white p-6 shadow-sm hover:shadow-md transition-all group"
-                        >
-                            <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-gradient-to-br from-[#F7F7F5] to-transparent opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
-                            <div className="relative flex items-start justify-between">
-                                <div className="flex flex-col">
-                                    <p className="text-sm font-bold text-[#5C5C5C]/60 mb-1">
-                                        {item.title}
-                                    </p>
-                                    <h3 className="text-4xl font-black text-[#5C5C5C] tracking-tight">
-                                        {item.value}
-                                    </h3>
+            {/* --- Info Statistics (Card Grid) --- */}
+            <motion.div variants={containerVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5 mb-8">
+                {isLoading ? (
+                    // Loader Skeleton Cards
+                    [1, 2, 3].map((i) => (
+                        <div key={i} className="h-32 rounded-3xl bg-gray-100 animate-pulse border border-gray-200"></div>
+                    ))
+                ) : (
+                    summaryStats.map((item, index) => {
+                        const Icon = item.icon;
+                        return (
+                            <motion.div
+                                key={index}
+                                variants={itemVariants}
+                                whileHover={{ scale: 1.02, y: -4 }}
+                                className="relative overflow-hidden rounded-3xl border border-[#D9DED8]/70 bg-white p-6 shadow-sm hover:shadow-md transition-all group flex"
+                            >
+                                <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-gradient-to-br from-[#F7F7F5] to-transparent opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+                                <div className="relative flex flex-1 items-start justify-between">
+                                    <div className="flex flex-col">
+                                        <p className="text-xs md:text-sm font-bold text-[#545454]/60 mb-1">
+                                            {item.title}
+                                        </p>
+                                        <h3 className="text-3xl md:text-4xl font-black text-[#545454] tracking-tight">
+                                            {item.value}
+                                        </h3>
+                                    </div>
+                                    <div className={`flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-2xl ${item.bg}`}>
+                                        <Icon className={`h-6 w-6 md:h-7 md:w-7 ${item.color}`} strokeWidth={2.5} />
+                                    </div>
                                 </div>
-                                <div className={`flex h-14 w-14 items-center justify-center rounded-2xl ${item.bg}`}>
-                                    <Icon className={`h-7 w-7 ${item.color}`} strokeWidth={2} />
-                                </div>
-                            </div>
-                        </motion.div>
-                    );
-                })}
+                            </motion.div>
+                        );
+                    })
+                )}
             </motion.div>
 
+            {/* --- AREA CHART (TREN KONTEN 7 HARI) --- */}
+            <motion.div variants={itemVariants} className="mb-10 rounded-3xl border border-[#D9DED8]/70 bg-white p-5 md:p-8 shadow-sm">
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 className="text-lg md:text-xl font-extrabold text-[#545454]">Tren Produksi Konten</h2>
+                        <p className="text-xs md:text-sm font-medium text-[#545454]/60 mt-1">Distribusi status konten selama 7 hari terakhir.</p>
+                    </div>
+                </div>
+                
+                <div className="w-full h-72 md:h-80">
+                    {isLoading ? (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-50/50 rounded-2xl animate-pulse">
+                            <span className="text-sm font-bold text-gray-400">Memuat Grafik...</span>
+                        </div>
+                    ) : (
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart
+                                data={chartData}
+                                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                            >
+                                <defs>
+                                    <linearGradient id="colorDiposting" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#39B772" stopOpacity={0.3}/>
+                                        <stop offset="95%" stopColor="#39B772" stopOpacity={0}/>
+                                    </linearGradient>
+                                    <linearGradient id="colorTerjadwal" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+                                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                                    </linearGradient>
+                                    <linearGradient id="colorDraft" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#D97706" stopOpacity={0.3}/>
+                                        <stop offset="95%" stopColor="#D97706" stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                <XAxis 
+                                    dataKey="date" 
+                                    axisLine={false} 
+                                    tickLine={false} 
+                                    tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 600 }}
+                                    dy={10}
+                                />
+                                <YAxis 
+                                    axisLine={false} 
+                                    tickLine={false} 
+                                    tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 600 }}
+                                    dx={-10}
+                                    allowDecimals={false}
+                                />
+                                <Tooltip 
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
+                                    itemStyle={{ fontWeight: 600, fontSize: '13px' }}
+                                    labelStyle={{ fontWeight: 800, color: '#545454', marginBottom: '4px' }}
+                                />
+                                <Legend iconType="circle" wrapperStyle={{ paddingTop: '15px', fontSize: '13px', fontWeight: 600, color: '#545454' }} />
+                                
+                                <Area type="monotone" dataKey="Diposting" stroke="#39B772" strokeWidth={3} fillOpacity={1} fill="url(#colorDiposting)" />
+                                <Area type="monotone" dataKey="Terjadwal" stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#colorTerjadwal)" />
+                                <Area type="monotone" dataKey="Draft" stroke="#D97706" strokeWidth={3} fillOpacity={1} fill="url(#colorDraft)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    )}
+                </div>
+            </motion.div>
+
+            {/* --- SECTION: DAFTAR KONTEN --- */}
+            
             {/* Filter & Search Bar */}
-            <motion.div variants={itemVariants} className="sticky top-0 z-10 bg-[#FAFAFA]/80 backdrop-blur-xl py-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:bg-transparent sm:backdrop-blur-none sm:py-0 mb-6 transition-all duration-300">
+            <motion.div variants={itemVariants} className="sticky top-0 z-10 bg-[#FAF9F5]/90 backdrop-blur-xl py-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:bg-transparent sm:backdrop-blur-none sm:py-0 mb-6 transition-all duration-300">
                 <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                    {/* Search Input */}
+                    <div className="flex w-full sm:w-[400px] md:w-[940px] items-center justify-between rounded-full bg-white px-5 py-5 shadow-sm focus-within:ring-2 focus-within:ring-[#39B772]/50 transition-all border border-[#D9DED8]/70">
+                        <div className="flex flex-1 items-center gap-3">
+                            <Search className="h-5 w-5 text-gray-400 shrink-0" strokeWidth={2.5} />
+                            <input
+                                type="text"
+                                placeholder="Cari konten mis. 'Promo'..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-transparent text-sm font-semibold text-[#545454] focus:outline-hidden placeholder:text-gray-400"
+                            />
+                        </div>
+                        {searchQuery ? (
+                            <button 
+                                onClick={() => setSearchQuery("")}
+                                className="flex shrink-0 ml-2 items-center"
+                            >
+                                <X className="h-4 w-4 text-gray-400 hover:text-red-400 transition-colors" />
+                            </button>
+                        ) : (
+                            <div className="flex shrink-0 ml-2 items-center pointer-events-none">
+                            </div>
+                        )}
+                    </div>
+
                     {/* Tabs */}
-                    <div className="flex w-full sm:w-auto items-center gap-1 rtl:space-x-reverse overflow-x-auto pb-2 sm:pb-0 rounded-2xl bg-[#F7F7F5] p-1.5 border border-[#D9DED8]">
-                        {tabs.map((tab) => (
+                    <div className="flex w-full sm:w-auto items-center gap-2 overflow-x-auto rounded-full bg-white p-2 border border-[#D9DED8]/70 shadow-sm">
+                        {TABS.map((tab) => (
                             <button
                                 key={tab}
-                                onClick={() => setActiveTab(tab)}
-                                className={`relative px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-colors duration-200 ${activeTab === tab ? "text-white" : "text-[#5C5C5C] hover:text-[#3FBA6B]"}`}
+                                onClick={() => setActiveTab(tab as any)}
+                                className={`relative px-6 py-3 rounded-full text-sm font-bold whitespace-nowrap transition-colors duration-200 focus:outline-none ${activeTab === tab ? "text-white" : "text-[#545454] hover:text-[#39B772]"}`}
                             >
                                 {activeTab === tab && (
                                     <motion.div
-                                        layoutId="activeTab"
-                                        className="absolute inset-0 bg-[#3FBA6B] rounded-xl shadow-sm"
+                                        layoutId="activeTabOutline"
+                                        className="absolute inset-0 bg-[#39B772] rounded-full shadow-md"
+                                        initial={false}
                                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                     />
                                 )}
@@ -173,145 +252,125 @@ export default function DashboardPageSection() {
                             </button>
                         ))}
                     </div>
-
-                    {/* Search */}
-                    <div className="relative w-full sm:w-[320px] group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Search className="h-5 w-5 text-[#5C5C5C]/40 group-focus-within:text-[#3FBA6B] transition-colors" />
-                        </div>
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Coba cari 'Promo' atau 'Tips'..."
-                            className="block w-full pl-11 pr-10 py-3 rounded-2xl border border-[#D9DED8] bg-white text-sm font-semibold text-[#5C5C5C] placeholder:text-[#5C5C5C]/40 focus:outline-none focus:ring-2 focus:ring-[#3FBA6B]/30 focus:border-[#3FBA6B]/50 transition-all shadow-sm"
-                        />
-                        {searchQuery && (
-                            <button 
-                                onClick={() => setSearchQuery("")}
-                                className="absolute inset-y-0 right-0 pr-4 flex items-center"
-                            >
-                                <X className="h-4 w-4 text-[#5C5C5C]/40 hover:text-red-400 transition-colors" />
-                            </button>
-                        )}
-                        {!searchQuery && (
-                            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                <Filter className="h-4 w-4 text-[#5C5C5C]/40" />
-                            </div>
-                        )}
-                    </div>
                 </div>
             </motion.div>
 
-            {/* Posts List */}
-            <motion.div variants={containerVariants} className="flex flex-col gap-4 min-h-[300px]">
-                <AnimatePresence mode="popLayout">
-                    {filteredPosts.length > 0 ? (
-                        filteredPosts.map((post) => (
-                            <motion.div
-                                key={post.id}
-                                layout
-                                initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
-                                whileHover={{ scale: 1.01, backgroundColor: "#ffffff", boxShadow: "0 8px 30px rgba(0,0,0,0.06)" }}
-                                transition={{ type: "spring", stiffness: 400, damping: 25 } as any}
-                                className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 rounded-3xl border border-[#D9DED8]/70 bg-[#FAFAFA] p-5 shadow-sm cursor-pointer group"
-                            >
-                                <div className="flex items-start sm:items-center gap-5">
-                                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#F0F2EB] to-[#D9E6D8] border border-[#D9DED8]/50 shadow-inner group-hover:rotate-6 transition-transform duration-300">
-                                        <Hash className="h-6 w-6 text-[#3FBA6B]" strokeWidth={2.5} />
-                                    </div>
-                                    <div className="flex flex-col gap-1.5">
-                                        <h3 className="text-[17px] font-black text-[#4A4A4A] line-clamp-1 group-hover:text-[#3FBA6B] transition-colors">{post.title}</h3>
-                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-bold text-[#5C5C5C]/60">
-                                            <div className="flex items-center gap-1.5 bg-[#F7F7F5] px-2 py-1 rounded-md border border-[#D9DED8]/50">
-                                                <Calendar className="h-3.5 w-3.5" />
+            {/* Posts Grid Layout (Bikin lebih mirip card ketimbang list ke bawah kalau layar besar) */}
+            <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5 min-h-[300px] auto-rows-max content-start items-start">
+                {isLoading ? (
+                    [1, 2, 3, 4].map((i) => (
+                        <div key={i} className="h-32 sm:h-36 rounded-3xl bg-gray-50 animate-pulse border border-gray-100"></div>
+                    ))
+                ) : (
+                    <AnimatePresence mode="popLayout">
+                        {filteredPosts.length > 0 ? (
+                            filteredPosts.map((post) => (
+                                <motion.div
+                                    key={post.id}
+                                    layout
+                                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+                                    whileHover={{ scale: 1.02, backgroundColor: "#ffffff", boxShadow: "0 10px 40px rgba(0,0,0,0.06)" }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 25 } as any}
+                                    className="flex flex-col justify-between gap-4 rounded-3xl border border-[#D9DED8]/60 bg-[#FAFAFA] p-5 shadow-sm cursor-pointer group"
+                                >
+                                    <div className="flex items-start gap-4">
+                                        <div className="flex shrink-0 items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                                            {post.platform.toLowerCase() === 'instagram' ? <InstagramIcon className="w-12 h-12 sm:w-[50px] sm:h-[50px] object-contain drop-shadow-sm" /> :
+                                             post.platform.toLowerCase() === 'facebook' ? <FacebookIcon className="w-12 h-12 sm:w-[50px] sm:h-[50px] object-contain drop-shadow-sm" /> :
+                                             post.platform.toLowerCase() === 'tiktok' ? <TikTokIcon className="w-12 h-12 sm:w-[50px] sm:h-[50px] object-contain drop-shadow-sm" /> :
+                                             <div className="flex h-12 w-12 sm:h-[50px] sm:w-[50px] items-center justify-center rounded-2xl bg-gradient-to-br from-[#F0F2EB] to-[#D9E6D8] border border-[#D9DED8]/50 shadow-inner group-hover:rotate-6 transition-transform duration-300"><Hash className="h-5 w-5 sm:h-6 sm:w-6 text-[#39B772]" strokeWidth={2.5} /></div>}
+                                        </div>
+                                        <div className="flex flex-col gap-1 overflow-hidden">
+                                            <h3 className="text-sm sm:text-base font-extrabold text-[#545454] line-clamp-2 group-hover:text-[#39B772] transition-colors leading-snug">
+                                                {post.title}
+                                            </h3>
+                                            <div className="flex items-center gap-1 mt-1 text-[10px] md:text-[11px] font-bold text-[#545454]/60">
+                                                <Calendar className="h-3 w-3" />
                                                 <span>{post.date}</span>
-                                            </div>
-                                            <div className="flex items-center gap-1.5 bg-[#F7F7F5] px-2 py-1 rounded-md border border-[#D9DED8]/50">
-                                                <Clock className="h-3.5 w-3.5" />
+                                                <span className="mx-1">&bull;</span>
+                                                <Clock className="h-3 w-3" />
                                                 <span>{post.time}</span>
                                             </div>
-                                            <div className="flex items-center gap-1 mt-1 sm:mt-0">
-                                                {post.tags.map(tag => (
-                                                    <span key={tag} className="text-[10px] uppercase tracking-wider bg-[#E8E6E0] text-[#5C5C5C] px-1.5 py-0.5 rounded">&middot; {tag}</span>
-                                                ))}
-                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="flex items-center justify-between sm:justify-end gap-6 sm:w-auto w-full pt-4 border-t border-[#D9DED8]/40 sm:border-t-0 sm:pt-0">
-                                    <div className="flex shrink-0 items-center gap-5">
-                                        <div className="flex items-center gap-1.5 text-sm font-bold text-[#5C5C5C] group/like">
-                                            <div className="p-1.5 rounded-full bg-[#F7F7F5] group-hover/like:bg-red-50 transition-colors">
-                                                <Heart className="h-4 w-4 fill-transparent text-[#5C5C5C]/60 group-hover/like:fill-red-500 group-hover/like:text-red-500 transition-all" />
+                                    <div className="flex items-center justify-between pt-3 border-t border-[#D9DED8]/50 mt-auto">
+                                        <div className="flex flex-col items-start gap-1">
+                                            <div className="flex gap-1.5 flex-wrap">
+                                                 {post.tags.slice(0, 2).map((tag, idx) => (
+                                                    <span key={idx} className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wide bg-[#E8E6E0]/60 text-[#545454] px-1.5 py-0.5 rounded">
+                                                        {tag}
+                                                    </span>
+                                                ))}
+                                                {post.tags.length > 2 && (
+                                                     <span className="text-[9px] font-extrabold text-[#545454]/50">+{post.tags.length - 2}</span>
+                                                )}
                                             </div>
-                                            {post.likes}
                                         </div>
-                                        <span className={`rounded-xl px-3 py-1.5 text-[11px] font-extrabold shadow-sm flex items-center gap-1.5 border
-                                            ${post.status === 'Diposting' ? 'bg-[#E3F2E1] text-[#3FBA6B] border-[#B7D8B5]/50' : 
-                                              post.status === 'Terjadwal' ? 'bg-[#EBF5FF] text-[#3B82F6] border-[#93C5FD]/50' : 
-                                              'bg-[#FEF3C7] text-[#D97706] border-[#FDE68A]/50'}`}
-                                        >
-                                            <span className={`h-1.5 w-1.5 rounded-full ${post.status === 'Diposting' ? 'bg-[#3FBA6B]' : post.status === 'Terjadwal' ? 'bg-[#3B82F6]' : 'bg-[#D97706]'}`}></span>
-                                            {post.status}
-                                        </span>
+
+                                        <div className="flex shrink-0 items-center justify-end gap-3 sm:gap-4">
+                                            {post.status === "Diposting" && (
+                                                <div className="flex items-center gap-1 text-xs font-bold text-[#545454] group/like" title="Likes">
+                                                    <Heart className="h-4 w-4 fill-transparent text-[#545454]/50 group-hover/like:fill-red-500 group-hover/like:text-red-500 transition-all" />
+                                                    {post.likes}
+                                                </div>
+                                            )}
+                                            
+                                            <span className={`rounded-xl px-3 py-1.5 text-[10px] sm:text-[11px] font-extrabold shadow-sm flex items-center gap-1.5 border min-w-[90px] justify-center
+                                                ${post.status === 'Diposting' ? 'bg-[#E3F2E1] text-[#39B772] border-[#B7D8B5]/50' : 
+                                                'bg-[#FEF3C7] text-[#D97706] border-[#FDE68A]/50'}`}
+                                            >
+                                                <span className={`h-1.5 w-1.5 rounded-full ${post.status === 'Diposting' ? 'bg-[#39B772]' : 'bg-[#D97706]'}`}></span>
+                                                {post.status}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                            </motion.div>
-                        ))
-                    ) : (
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="flex flex-col items-center justify-center text-center px-4 py-20 border-2 border-dashed border-[#D9DED8] rounded-3xl bg-[#FAFAFA]"
-                        >
-                            <div className="h-16 w-16 mb-4 rounded-full bg-[#F7F7F5] flex items-center justify-center border border-[#D9DED8]/60">
-                                <Search className="h-8 w-8 text-[#5C5C5C]/30" />
-                            </div>
-                            <h3 className="text-xl font-bold text-[#5C5C5C]">Tidak ada konten ditemukan</h3>
-                            <p className="text-sm font-medium text-[#5C5C5C]/60 mt-2 max-w-sm">
-                                Kami tidak bisa menemukan konten yang sesuai dengan pencarian "{searchQuery}". Coba kata kunci lain atau ubah filter Anda.
-                            </p>
-                            <button 
-                                onClick={() => { setSearchQuery(""); setActiveTab("Semua"); }}
-                                className="mt-6 px-6 py-2.5 bg-white border border-[#D9DED8] rounded-xl text-sm font-bold text-[#5C5C5C] hover:text-[#3FBA6B] hover:border-[#3FBA6B] hover:shadow-sm transition-all"
+                                </motion.div>
+                            ))
+                        ) : (
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="col-span-1 md:col-span-2 flex flex-col items-center justify-center text-center px-4 py-16 border-2 border-dashed border-[#D9DED8] rounded-3xl bg-transparent"
                             >
-                                Reset Pencarian
-                            </button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                                <div className="h-16 w-16 mb-4 rounded-full bg-[#F7F7F5] flex items-center justify-center border border-[#D9DED8]/60">
+                                    <Search className="h-8 w-8 text-[#545454]/30" />
+                                </div>
+                                <h3 className="text-xl font-bold text-[#545454]">Tidak ada hasil.</h3>
+                                <p className="text-sm font-medium text-[#545454]/60 mt-2 max-w-sm">
+                                    Konten dengan filter dan kata kunci "{searchQuery}" tidak dapat ditemukan.
+                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                )}
             </motion.div>
 
             {/* Pagination Box */}
-            <motion.div variants={itemVariants} className="mt-12 flex flex-col items-center justify-center gap-5">
-                <div className="h-[1px] w-full max-w-md bg-gradient-to-r from-transparent via-[#D9DED8] to-transparent opacity-60"></div>
-                
-                <div className="flex items-center gap-3">
-                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ type: "spring" } as any} className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-[#5C5C5C] shadow-sm border border-[#D9DED8] hover:bg-[#F7F7F5] transition-colors">
+            <motion.div variants={itemVariants} className="mt-10 flex flex-col items-center justify-center gap-5">
+                <div className="flex items-center gap-2">
+                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ type: "spring" } as any} className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-white text-[#545454] shadow-sm border border-[#D9DED8]/80 hover:bg-[#F7F7F5] transition-colors">
                         <ChevronLeft className="h-5 w-5" strokeWidth={2.5} />
                     </motion.button>
-                    <div className="flex items-center gap-2">
-                        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ type: "spring" } as any} className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#3FBA6B] text-sm font-black text-white shadow-md shadow-[#3FBA6B]/20">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ type: "spring" } as any} className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-[#39B772] text-sm font-black text-white shadow-md shadow-[#39B772]/20">
                             1
                         </motion.button>
-                        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ type: "spring" } as any} className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-[#5C5C5C] shadow-sm border border-[#D9DED8] hover:bg-[#F7F7F5] transition-colors font-bold text-sm">
-                            2
-                        </motion.button>
+                        {filteredPosts.length > 5 && (
+                             <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ type: "spring" } as any} className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-white text-[#545454] shadow-sm border border-[#D9DED8]/80 hover:bg-[#F7F7F5] transition-colors font-bold text-sm">
+                                 2
+                             </motion.button>
+                        )}
                     </div>
-                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ type: "spring" } as any} className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-[#5C5C5C] shadow-sm border border-[#D9DED8] hover:bg-[#F7F7F5] transition-colors">
+                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ type: "spring" } as any} className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-white text-[#545454] shadow-sm border border-[#D9DED8]/80 hover:bg-[#F7F7F5] transition-colors">
                         <ChevronRight className="h-5 w-5" strokeWidth={2.5} />
                     </motion.button>
                 </div>
-                
-                <p className="text-xs font-bold text-[#5C5C5C]/60 uppercase tracking-widest">
-                    Menampilkan {filteredPosts.length} dari {filteredPosts.length > 0 ? filteredPosts.length : 0} postingan
-                </p>
             </motion.div>
         </motion.div>
+        </section>
     );
 }

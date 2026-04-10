@@ -4,6 +4,11 @@ import { useScheduleController } from '../../../hooks/useScheduleController';
 import type { ScheduleItem } from '../../../types/schedule';
 import { ToastNotification } from '../../Elements/ToastNotification';
 import { confirmAction } from '../../../utils/swal';
+import { Search, X } from "lucide-react";
+import { FacebookIcon, InstagramIcon, TikTokIcon } from '../../Elements/icons/SosialMedia';
+import { motion } from "framer-motion";
+
+const PLATFORMS = ["Semua", "Instagram", "Facebook", "TikTok"] as const;
 
 // Nanti akan dipindah/ubah saat kita menggarap PUT Edit
 export interface EditDraftPayload {
@@ -35,9 +40,9 @@ const formatDisplayTime = (isoStr: string): string => {
 };
 
 export default function DraftListSection() {
-    // --- State UI ---
     const [isVisible, setIsVisible]     = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [activePlatform, setActivePlatform] = useState<"Semua" | "Instagram" | "TikTok" | "Facebook">("Semua");
     const [editingId, setEditingId]     = useState<number | null>(null);
     const [editForm, setEditForm]       = useState<EditDraftPayload>({ title: '', description: '', date: '', time: '' });
     const [isSaving, setIsSaving]       = useState(false);
@@ -116,11 +121,12 @@ export default function DraftListSection() {
         }
     };
 
-    const filteredDrafts = drafts.filter(
-        (d) =>
-            (d.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (d.caption || '').toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredDrafts = drafts.filter((d) => {
+        const matchesSearch = (d.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              (d.caption || '').toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesPlatform = activePlatform === "Semua" || (d.platform && d.platform.toLowerCase() === activePlatform.toLowerCase());
+        return matchesSearch && matchesPlatform;
+    });
 
     return (
         <section className="min-h-screen w-full py-10 md:py-20 px-6 md:px-12 lg:px-16">
@@ -162,20 +168,57 @@ export default function DraftListSection() {
 
                 
 
-                {/* Search Bar */}
+                {/* Search & Filter Bar */}
                 <div className={`relative mb-10 w-full transition-all duration-700 delay-200 ease-out ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-                    <div className="flex w-full items-center justify-between rounded-full bg-white px-6 py-4 shadow-sm focus-within:ring-2 focus-within:ring-primary/50 transition-all">
-                        <div className="flex flex-1 items-center gap-4">
-                            <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                            <input
-                                type="text"
-                                placeholder="Cari konten draft....."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-transparent text-base font-medium text-dark outline-hidden placeholder:text-gray-400"
-                            />
+                    <div className="flex flex-col xl:flex-row gap-4 items-start xl:items-center justify-between">
+                        {/* Search Input */}
+                        <div className="flex w-full sm:w-[400px] md:w-[1000px] items-center justify-between rounded-full bg-white px-5 py-5 shadow-sm focus-within:ring-2 focus-within:ring-primary/50 transition-all border border-gray-200 flex-shrink-0">
+                            <div className="flex flex-1 items-center gap-3">
+                                <Search className="h-5 w-5 text-gray-400 shrink-0" strokeWidth={2.5} />
+                                <input
+                                    type="text"
+                                    placeholder="Cari konten draft..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full bg-transparent text-sm font-semibold text-dark focus:outline-hidden placeholder:text-gray-400"
+                                />
+                            </div>
+                            {searchQuery ? (
+                                <button 
+                                    onClick={() => setSearchQuery("")}
+                                    className="flex shrink-0 ml-2 items-center"
+                                >
+                                    <X className="h-4 w-4 text-gray-400 hover:text-red-400 transition-colors" />
+                                </button>
+                            ) : (
+                                <div className="flex shrink-0 ml-2 items-center pointer-events-none"></div>
+                            )}
+                        </div>
+
+                        {/* Platform Tabs */}
+                        <div className="flex w-full sm:w-auto items-center gap-2 overflow-x-auto rounded-full bg-white p-2 border border-gray-200 shadow-sm scrollbar-hide">
+                            {PLATFORMS.map((platform) => (
+                                <button
+                                    key={platform}
+                                    onClick={() => setActivePlatform(platform as any)}
+                                    className={`relative flex items-center justify-center ${platform === "Semua" ? "px-5 py-2.5" : "w-10 h-10 sm:w-11 sm:h-11"} rounded-full text-sm font-bold whitespace-nowrap transition-colors duration-200 focus:outline-none ${activePlatform === platform ? "text-white" : "text-dark hover:text-primary"}`}
+                                >
+                                    {activePlatform === platform && (
+                                        <motion.div
+                                            layoutId="activePlatformOutlineDraft"
+                                            className="absolute inset-0 bg-primary rounded-full shadow-md"
+                                            initial={false}
+                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                        />
+                                    )}
+                                    <span className="relative z-10 flex items-center justify-center">
+                                        {platform === 'Instagram' ? <InstagramIcon className={`w-5 h-5 sm:w-[22px] sm:h-[22px] object-contain ${activePlatform === platform ? 'drop-shadow-sm' : ''}`} /> :
+                                         platform === 'Facebook' ? <FacebookIcon className={`w-5 h-5 sm:w-[22px] sm:h-[22px] object-contain ${activePlatform === platform ? 'drop-shadow-sm' : ''}`} /> :
+                                         platform === 'TikTok' ? <TikTokIcon className={`w-5 h-5 sm:w-[22px] sm:h-[22px] object-contain ${activePlatform === platform ? 'drop-shadow-sm' : ''}`} /> :
+                                         platform}
+                                    </span>
+                                </button>
+                            ))}
                         </div>
                     </div>
                 </div>
