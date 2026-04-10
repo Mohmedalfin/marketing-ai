@@ -257,15 +257,26 @@ export default function DraftListSection() {
                                         ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}
                                     `}
                                 >
-                                    {/* Gambar Background */}
-                                    <img 
-                                        src={draft.image_url} 
-                                        alt={draft.title} 
-                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                        style={{
-                                            filter: isEditing ? 'blur(8px) brightness(0.6)' : 'none'
-                                        }}
-                                    />
+                                    {/* Media Background - Gambar atau Video */}
+                                    {(draft.media_type?.toLowerCase() === 'video' || (!draft.media_type && draft.video_url)) && draft.video_url ? (
+                                        <video
+                                            src={draft.video_url}
+                                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                            style={{
+                                                filter: isEditing ? 'blur(8px) brightness(0.6)' : 'none'
+                                            }}
+                                            autoPlay muted loop playsInline
+                                        />
+                                    ) : (
+                                        <img 
+                                            src={draft.image_url} 
+                                            alt={draft.title} 
+                                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                            style={{
+                                                filter: isEditing ? 'blur(8px) brightness(0.6)' : 'none'
+                                            }}
+                                        />
+                                    )}
                                     
                                     {/* Gradient Overlay untuk teks agar mudah dibaca */}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/5 pointer-events-none" />

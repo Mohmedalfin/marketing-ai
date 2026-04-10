@@ -8,24 +8,28 @@ export const useAiStudio = () => {
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
     const [loadingMessage, setLoadingMessage] = useState<string>('');
     const [generatedPoster, setGeneratedPoster] = useState<string | null>(null);
+    const [generatedVideo, setGeneratedVideo] = useState<string | null>(null);
     const [captionText, setCaptionText] = useState<string>("");
 
-    const restoreResult = (poster: string | null, caption: string) => {
+    const restoreResult = (poster: string | null, caption: string, video?: string | null) => {
         setGeneratedPoster(poster);
+        setGeneratedVideo(video ?? null);
         setCaptionText(caption);
     };
 
-    const generate = async (imageBase64: string, style: string, instruction: string) => {
+    const generate = async (imageBase64: string, style: string, mediaType: string, instruction: string) => {
         try {
             setIsGenerating(true);
             setLoadingMessage("Menganalisa objek produk...");
             setGeneratedPoster(null);
+            setGeneratedVideo(null);
             setCaptionText("");
 
             // 1. Persiapan Data (Sudah Base64)
             const payload: AiGenerateRequest = {
                 image_base64: imageBase64,
                 category: style,
+                media_type: mediaType,
                 prompt_design: instruction
             };
 
@@ -48,7 +52,8 @@ export const useAiStudio = () => {
             try {
                 const result = await generatePosterAPI(payload);
                 
-                setGeneratedPoster(result.data.image_url);
+                setGeneratedPoster(result.data.image_url || null);
+                setGeneratedVideo(result.data.video_url || null);
                 setCaptionText(result.data.caption);
                 
                 return { success: true, data: result.data };
@@ -71,6 +76,7 @@ export const useAiStudio = () => {
         isGenerating,
         loadingMessage,
         generatedPoster,
+        generatedVideo,
         captionText,
         setCaptionText,
         generate,

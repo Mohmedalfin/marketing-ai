@@ -2,17 +2,32 @@ import { InstagramIcon } from '../../Elements/icons/SosialMedia';
 import { 
     useAiStudioController, 
     STYLE_OPTIONS, 
-    PLATFORM_OPTIONS 
+    PLATFORM_OPTIONS,
+    TYPE_CONTENT 
 } from '../../../hooks/useAiStudioController';
 import { ToastNotification } from '../../Elements/ToastNotification';
 import { confirmAction } from '../../../utils/swal';
+import { PosterResultViewer } from "../../Elements/poster/PosterResultViewer";
+
+import { 
+    TrashIcon, 
+    RefreshIcon, 
+    ChangeImageIcon, 
+    DropdownArrowIcon, 
+    CheckIcon, 
+    MenuDotsIcon, 
+    CaptionIcon, 
+    ClockIcon, 
+    CalendarIcon, 
+    SpinnerIcon 
+} from '../../Elements/icons/AiStudioIcons';
 
 const AiStudioSection = () => {
     const controller = useAiStudioController();
     const { 
         formData, 
         uiState, 
-        aiStudio: { isGenerating, generatedPoster, captionText, setCaptionText, loadingMessage },
+        aiStudio: { isGenerating, generatedPoster, generatedVideo, captionText, setCaptionText, loadingMessage },
         fileInputRef, 
         sectionRef, 
         instructionRef,
@@ -22,8 +37,10 @@ const AiStudioSection = () => {
         handlePublish,
         togglePlatform, 
         toggleStyleDropdown, 
+        toggleMediaTypeDropdown,
         togglePlatformDropdown, 
         setStyle,
+        setMediaType,
         setTitle,
         setScheduledDate,
         setScheduledTime,
@@ -98,6 +115,7 @@ const AiStudioSection = () => {
                     INTRUKSI DESAIN DAN CAPTION
                 </h3>                          
                 <div className="rounded-2xl border border-primary p-4 bg-white focus-within:ring-2 focus-within:ring-primary/20 transition-all flex flex-col flex-1">
+                    <div className="flex flex-wrap items-center gap-3 mb-3">
                     <div className="mb-3 flex relative">
                         <button 
                             onClick={() => toggleStyleDropdown()}
@@ -120,7 +138,31 @@ const AiStudioSection = () => {
                             ))}
                         </div>
                     </div>
-                    <textarea 
+                    <div className="mb-3 flex relative">
+                        <button 
+                            onClick={() => toggleMediaTypeDropdown()}
+                            onBlur={() => setTimeout(() => toggleMediaTypeDropdown(false), 200)}
+                            className="flex items-center gap-2 rounded-full bg-primary px-3 py-1 text-[10px] md:text-xs font-bold text-white focus:outline-hidden hover:bg-primary/90 transition-colors"
+                        >
+                            Type : {formData.mediaType} 
+                            <DropdownArrowIcon isOpen={uiState.isMediaTypeDropdownOpen} />
+                        </button>
+
+                        <div className={`absolute top-full left-0 mt-2 w-48 rounded-xl border border-gray-100 bg-white shadow-xl py-2 z-10 transition-all duration-200 origin-top-left ${uiState.isMediaTypeDropdownOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
+                            {TYPE_CONTENT.map((typeOption) => (
+                                <button
+                                    key={typeOption}
+                                    onClick={() => setMediaType(typeOption)}
+                                    className={`w-full text-left px-4 py-2 text-xs md:text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary ${formData.mediaType === typeOption ? 'text-primary bg-primary/5' : 'text-[#2b2b2b]'}`}
+                                >
+                                    {typeOption}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    </div>
+                    
+                    <textarea  
                         ref={instructionRef}
                         className="w-full flex-1 resize-none text-xs md:text-sm font-medium text-dark bg-transparent outline-hidden placeholder:text-gray-400 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                         placeholder="Masukkan Instruksi Desain"
@@ -140,39 +182,26 @@ const AiStudioSection = () => {
         </div>
     );
 
-    const renderPosterResult = () => (
-        <div className="flex flex-col self-start w-full rounded-2xl border border-primary p-4 overflow-hidden bg-primary-light/10">
-            <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-3 shrink-0">
-                <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
-                        <PhotoIcon />
-                    </div>
-                    <span className="rounded-full bg-primary px-3 py-0.5 text-[10px] md:text-xs font-bold text-white">Foto</span>
-                </div>
-                <MenuDotsIcon />
+    const renderPosterResult = () => {
+        const isVideo = formData.mediaType.toLowerCase() === 'video';
+        const generatedMedia = isVideo ? generatedVideo : generatedPoster;
+        return (
+            <div className="flex flex-col self-start w-full">
+               <PosterResultViewer 
+                formData={formData}
+                generatedMedia={generatedMedia} 
+                isGenerating={isGenerating}
+                loadingMessage={loadingMessage}
+            />
             </div>
-            
-            <div className="w-full flex-1 relative flex items-center justify-center">
-                <div className={`relative w-full max-w-sm ${generatedPoster ? 'aspect-square' : 'h-24 lg:min-h-[350px] w-full'} transition-all duration-700 ease-in-out ring-1 ring-gray-900/5 shadow-2xl shadow-primary/20 rounded-xl overflow-hidden flex items-center justify-center p-2 bg-white`}>
-                    {isGenerating ? (
-                        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-50/90 backdrop-blur-sm p-6 text-center">
-                            <SpinnerIcon className="w-8 h-8 md:w-10 md:h-10 text-primary/50 mb-4 animate-spin" />
-                            <span className="text-[10px] md:text-xs font-bold text-primary animate-pulse">{loadingMessage}</span>
-                        </div>
-                    ) : generatedPoster ? (
-                        <img src={generatedPoster} alt="Generated Poster Preview" className="w-full h-full object-contain transition-opacity duration-500" />
-                    ) : (
-                        <div className="flex items-center justify-center text-gray-400 w-full h-full text-[10px] md:text-xs text-center p-4">
-                            Belum ada poster. Klik Generate.
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
+        );
+    };
 
-    const renderCaptionResult = () => (
-        <div className={`flex flex-col flex-1 ${generatedPoster ? 'min-h-[220px] md:min-h-0' : 'min-h-[100px] h-32 lg:h-auto'} transition-all duration-700 ease-in-out rounded-2xl border border-primary p-4 bg-white relative`}>
+    const renderCaptionResult = () => {
+        const isVideo = formData.mediaType.toLowerCase() === 'video';
+        const hasContent = isVideo ? !!generatedVideo : !!generatedPoster;
+        return (
+        <div className={`flex flex-col flex-1 ${hasContent ? 'min-h-[220px] md:min-h-0' : 'min-h-[100px] h-32 lg:h-auto'} transition-all duration-700 ease-in-out rounded-2xl border border-primary p-4 bg-white relative`}>
             <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-3 shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
@@ -212,7 +241,8 @@ const AiStudioSection = () => {
                 )}
             </div>
         </div>
-    );
+        );
+    };
 
     const renderPlatformControls = () => (
         <>
@@ -323,72 +353,7 @@ const AiStudioSection = () => {
             />
         </section>
     );
+
 };
-
-// --- ICONS (Functional Components) ---
-
-const TrashIcon = () => (
-    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-    </svg>
-);
-
-const RefreshIcon = ({ isGenerating }: { isGenerating: boolean }) => (
-    <svg className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-    </svg>
-);
-
-const ChangeImageIcon = () => (
-    <svg className="w-8 h-8 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-    </svg>
-);
-
-const DropdownArrowIcon = ({ isOpen, svgClass = "w-3 h-3" }: { isOpen: boolean, svgClass?: string }) => (
-    <svg className={`${svgClass} transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-    </svg>
-);
-
-const CheckIcon = () => (
-    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-    </svg>
-);
-
-const MenuDotsIcon = () => (
-    <svg className="w-5 h-5 text-primary cursor-pointer hover:opacity-70" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-    </svg>
-);
-
-const PhotoIcon = () => (
-    <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-    </svg>
-);
-
-const CaptionIcon = PhotoIcon; // Reuse the same icon
-
-const ClockIcon = () => (
-    <svg className="w-4 h-4 md:w-5 md:h-5 text-primary absolute right-3 md:right-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-);
-
-const CalendarIcon = () => (
-    <svg className="w-4 h-4 md:w-5 md:h-5 text-primary absolute right-3 md:right-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-    </svg>
-);
-
-const SpinnerIcon = ({ className = "animate-spin -ml-1 mr-2 h-5 w-5 text-white" }: { className?: string }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-    </svg>
-);
 
 export default AiStudioSection;

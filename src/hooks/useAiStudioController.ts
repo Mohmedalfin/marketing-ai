@@ -17,6 +17,12 @@ export const PLATFORM_OPTIONS = [
     'TikTok',
 ];
 
+
+export const TYPE_CONTENT = [
+    'Foto',
+    'Video',
+];
+
 const getInitialAiData = () => {
     if (typeof window === 'undefined') return null;
     
@@ -40,27 +46,27 @@ const getPreviewUrl = (imgBase64: string | null) => {
     return `data:image/png;base64,${imgBase64}`;
 };
 
-// 3. IMPLEMENTASI CUSTOM HOOK UNTUK LOGIKA UTAMA
 export const useAiStudioController = () => {
-    // 2. CONSOLIDATION STATE: uiState
     const [uiState, setUiState] = useState<{
         isVisible: boolean;
         isStyleDropdownOpen: boolean;
+        isMediaTypeDropdownOpen: boolean;
         isPlatformDropdownOpen: boolean;
         isPublishing: boolean;
         toast: { isVisible: boolean; message: string; type: 'success' | 'error' };
     }>({
         isVisible: false,
         isStyleDropdownOpen: false,
+        isMediaTypeDropdownOpen: false,
         isPlatformDropdownOpen: false,
         isPublishing: false,
         toast: { isVisible: false, message: '', type: 'success' }
     });
 
-    // 2. CONSOLIDATION STATE: formData
     const [formData, setFormData] = useState<{
         title: string;
         style: string;
+        mediaType: string;
         platforms: string[];
         imagePreview: string | null;
         imageFile: File | null;
@@ -70,6 +76,7 @@ export const useAiStudioController = () => {
     }>({
         title: '',
         style: 'Fashion',
+        mediaType: 'Foto',
         platforms: ['Instagram'],
         imagePreview: null,
         imageFile: null,
@@ -78,7 +85,6 @@ export const useAiStudioController = () => {
         scheduledTime: '12:00',
     });
 
-    // Refs
     const fileInputRef = useRef<HTMLInputElement>(null);
     const sectionRef = useRef<HTMLDivElement>(null);
     const instructionRef = useRef<HTMLTextAreaElement>(null);
@@ -86,7 +92,6 @@ export const useAiStudioController = () => {
     const aiStudio = useAiStudio();
     const { restoreResult, generate } = aiStudio;
 
-    // 4. PERBAIKAN INISIALISASI (Local Storage Read Only Once)
     useEffect(() => {
         const initialData = getInitialAiData();
         if (!initialData) return;
@@ -94,6 +99,7 @@ export const useAiStudioController = () => {
         setFormData(prev => ({
             ...prev,
             style: initialData.style || 'Fashion',
+            mediaType: initialData.mediaType || 'Foto',
             platforms: initialData.platforms || ['Instagram'],
             imagePreview: initialData.image ? getPreviewUrl(initialData.image) : null,
             persistedBase64: initialData.image || null,
@@ -104,12 +110,10 @@ export const useAiStudioController = () => {
         }
 
         if (initialData.poster && initialData.caption) {
-            restoreResult(initialData.poster, initialData.caption);
+            restoreResult(initialData.poster, initialData.caption, initialData.video || null);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Intersection Observer Logic
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
@@ -125,11 +129,17 @@ export const useAiStudioController = () => {
         return () => observer.disconnect();
     }, []);
 
-    // UI Toggles
     const toggleStyleDropdown = (val?: boolean) => {
         setUiState(prev => ({ 
             ...prev, 
             isStyleDropdownOpen: val !== undefined ? val : !prev.isStyleDropdownOpen 
+        }));
+    };
+
+    const toggleMediaTypeDropdown = (val?: boolean) => {
+        setUiState(prev => ({ 
+            ...prev, 
+            isMediaTypeDropdownOpen: val !== undefined ? val : !prev.isMediaTypeDropdownOpen 
         }));
     };
 
@@ -151,6 +161,11 @@ export const useAiStudioController = () => {
     const setStyle = (style: string) => {
         setFormData(prev => ({ ...prev, style }));
         toggleStyleDropdown(false);
+    };
+
+    const setMediaType = (mediaType: string) => {
+        setFormData(prev => ({ ...prev, mediaType }));
+        toggleMediaTypeDropdown(false);
     };
 
     const setTitle = (title: string) => {
@@ -193,19 +208,21 @@ export const useAiStudioController = () => {
         if (!base64Str) return;
 
         const instruction = instructionRef.current?.value || "";
-        const res = await generate(base64Str, formData.style, instruction);
+        const res = await generate(base64Str, formData.style, formData.mediaType, instruction);
         
         if (res?.success && res.data) {
             localStorage.setItem('ai_studio_last_result', JSON.stringify({
                 image: base64Str,
                 style: formData.style,
+                mediaType: formData.mediaType,
                 instruction: instruction,
                 platforms: formData.platforms,
                 poster: res.data.image_url,
+                video: res.data.video_url,
                 caption: res.data.caption
             }));
             setFormData(prev => ({ ...prev, persistedBase64: base64Str }));
-            showToast("Generasi poster AI berhasil dilakukan!", 'success');
+            showToast("Generasi konten AI berhasil dilakukan!", 'success');
         } else if (res?.success === false) {
             showToast("Terjadi kesalahan saat melakukan generasi poster", 'error');
         }
@@ -213,7 +230,9 @@ export const useAiStudioController = () => {
 
     const handlePublish = async () => {
         if (!formData.title) return showToast("Judul postingan tidak boleh kosong.", 'error');
-        if (!aiStudio.generatedPoster || !aiStudio.captionText) return showToast("Anda harus melakukan generate AI terlebih dahulu.", 'error');
+        const isVideo = formData.mediaType.toLowerCase() === 'video';
+        const hasMedia = isVideo ? !!aiStudio.generatedVideo : !!aiStudio.generatedPoster;
+        if (!hasMedia || !aiStudio.captionText) return showToast("Anda harus melakukan generate AI terlebih dahulu.", 'error');
         
         try {
             setUiState(prev => ({ ...prev, isPublishing: true }));
@@ -225,7 +244,9 @@ export const useAiStudioController = () => {
             const payload = {
                 title: formData.title,
                 caption: aiStudio.captionText,
-                image_url: aiStudio.generatedPoster,
+                image_url: isVideo ? '' : (aiStudio.generatedPoster ?? ''),
+                video_url: isVideo ? (aiStudio.generatedVideo ?? '') : '',
+                media_type: formData.mediaType.toLowerCase(),
                 platform: formData.platforms[0] || "Instagram",
                 scheduled_time: dateTimeString
             };
@@ -251,6 +272,7 @@ export const useAiStudioController = () => {
         setFormData({
             title: '',
             style: 'Fashion',
+            mediaType: 'foto',
             platforms: ['Instagram'],
             imagePreview: null,
             imageFile: null,
@@ -280,8 +302,10 @@ export const useAiStudioController = () => {
         handlePublish,
         togglePlatform,
         toggleStyleDropdown,
+        toggleMediaTypeDropdown,
         togglePlatformDropdown,
         setStyle,
+        setMediaType,
         setTitle,
         setScheduledDate,
         setScheduledTime,

@@ -80,16 +80,12 @@ export const useScheduleController = () => {
         }
     };
 
-    // Implementasi DELETE dengan pola Optimistic Update
     const deleteSchedule = async (id: number) => {
-        // Simpan state asli untuk rollback jika gagal
         const originalSchedules = [...schedules];
 
         try {
-            // Optimistic Update: Hapus Instan UI
             setSchedules(prev => prev.filter(item => item.id !== id));
 
-            // Kirim DELETE ke backend
             await deleteScheduleAPI(id);
             return { success: true };
         } catch (err) {
