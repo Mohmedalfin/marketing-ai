@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import logoGambar from "../../assets/logo.png";
+import { useLogout } from "../../hooks/useLogout";
 
 export default function Navbar({ variant = "landing" }: { variant?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+  const { handleLogout } = useLogout();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -170,7 +172,7 @@ export default function Navbar({ variant = "landing" }: { variant?: string }) {
                     Profil Saya
                   </a>
                   <button
-                    onClick={() => console.log('logout')}
+                    onClick={() => handleLogout(() => setIsProfileOpen(false))}
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   >
                     Logout
@@ -239,8 +241,8 @@ export default function Navbar({ variant = "landing" }: { variant?: string }) {
                 </a>
                 
                 <button 
-                  className="text-left font-semibold text-red-600"
-                  onClick={() => console.log('logout')}
+                  className="text-left font-semibold text-red-600 focus:outline-none"
+                  onClick={() => handleLogout()}
                 >
                   Logout
                 </button>

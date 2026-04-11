@@ -116,50 +116,71 @@ const AiStudioSection = () => {
                 </h3>                          
                 <div className="rounded-2xl border border-primary p-4 bg-white focus-within:ring-2 focus-within:ring-primary/20 transition-all flex flex-col flex-1">
                     <div className="flex flex-wrap items-center gap-3 mb-3">
-                    <div className="mb-3 flex relative">
-                        <button 
-                            onClick={() => toggleStyleDropdown()}
-                            onBlur={() => setTimeout(() => toggleStyleDropdown(false), 200)}
-                            className="flex items-center gap-2 rounded-full bg-primary px-3 py-1 text-[10px] md:text-xs font-bold text-white focus:outline-hidden hover:bg-primary/90 transition-colors"
-                        >
-                            Kategori : {formData.style} 
-                            <DropdownArrowIcon isOpen={uiState.isStyleDropdownOpen} />
-                        </button>
+                        <div className="mb-3 flex relative">
+                            <button 
+                                onClick={() => toggleStyleDropdown()}
+                                onBlur={() => setTimeout(() => toggleStyleDropdown(false), 200)}
+                                className="flex max-w-[140px] md:max-w-none items-center gap-2 rounded-full bg-primary px-2 md:px-3 py-1 text-[10px] md:text-xs font-bold text-white focus:outline-hidden hover:bg-primary/90 transition-colors"
+                            >
+                                <span className="truncate">Kategori : {formData.style}</span>
+                                <DropdownArrowIcon isOpen={uiState.isStyleDropdownOpen} />
+                            </button>
 
-                        <div className={`absolute top-full left-0 mt-2 w-48 rounded-xl border border-gray-100 bg-white shadow-xl py-2 z-10 transition-all duration-200 origin-top-left ${uiState.isStyleDropdownOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
-                            {STYLE_OPTIONS.map((style) => (
-                                <button
-                                    key={style}
-                                    onClick={() => setStyle(style)}
-                                    className={`w-full text-left px-4 py-2 text-xs md:text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary ${formData.style === style ? 'text-primary bg-primary/5' : 'text-[#2b2b2b]'}`}
-                                >
-                                    {style}
-                                </button>
-                            ))}
+                            <div
+                                className={`absolute top-full left-0 mt-2 w-36 md:w-48 max-w-[calc(100vw-32px)] rounded-xl border border-gray-100 bg-white shadow-xl py-2 z-10 transition-all duration-200 origin-top-left ${
+                                    uiState.isStyleDropdownOpen
+                                        ? 'opacity-100 scale-100 visible'
+                                        : 'opacity-0 scale-95 invisible'
+                                }`}
+                            >
+                                {STYLE_OPTIONS.map((style) => (
+                                    <button
+                                        key={style}
+                                        onClick={() => setStyle(style)}
+                                        className={`w-full text-left px-3 md:px-4 py-2 text-[11px] md:text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary truncate ${
+                                            formData.style === style
+                                                ? 'text-primary bg-primary/5'
+                                                : 'text-[#2b2b2b]'
+                                        }`}
+                                    >
+                                        {style}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                    <div className="mb-3 flex relative">
-                        <button 
-                            onClick={() => toggleMediaTypeDropdown()}
-                            onBlur={() => setTimeout(() => toggleMediaTypeDropdown(false), 200)}
-                            className="flex items-center gap-2 rounded-full bg-primary px-3 py-1 text-[10px] md:text-xs font-bold text-white focus:outline-hidden hover:bg-primary/90 transition-colors"
-                        >
-                            Type : {formData.mediaType} 
-                            <DropdownArrowIcon isOpen={uiState.isMediaTypeDropdownOpen} />
-                        </button>
 
-                        <div className={`absolute top-full left-0 mt-2 w-48 rounded-xl border border-gray-100 bg-white shadow-xl py-2 z-10 transition-all duration-200 origin-top-left ${uiState.isMediaTypeDropdownOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
-                            {TYPE_CONTENT.map((typeOption) => (
-                                <button
-                                    key={typeOption}
-                                    onClick={() => setMediaType(typeOption)}
-                                    className={`w-full text-left px-4 py-2 text-xs md:text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary ${formData.mediaType === typeOption ? 'text-primary bg-primary/5' : 'text-[#2b2b2b]'}`}
-                                >
-                                    {typeOption}
-                                </button>
-                            ))}
+                        <div className="mb-3 flex relative">
+                            <button 
+                                onClick={() => toggleMediaTypeDropdown()}
+                                onBlur={() => setTimeout(() => toggleMediaTypeDropdown(false), 200)}
+                                className="flex max-w-[120px] md:max-w-none items-center gap-2 rounded-full bg-primary px-2 md:px-3 py-1 text-[10px] md:text-xs font-bold text-white focus:outline-hidden hover:bg-primary/90 transition-colors"
+                            >
+                                <span className="truncate">Type : {formData.mediaType}</span>
+                                <DropdownArrowIcon isOpen={uiState.isMediaTypeDropdownOpen} />
+                            </button>
+
+                            <div
+                                className={`absolute top-full left-0 mt-2 w-32 md:w-48 max-w-[calc(100vw-32px)] rounded-xl border border-gray-100 bg-white shadow-xl py-2 z-10 transition-all duration-200 origin-top-left ${
+                                    uiState.isMediaTypeDropdownOpen
+                                        ? 'opacity-100 scale-100 visible'
+                                        : 'opacity-0 scale-95 invisible'
+                                }`}
+                            >
+                                {TYPE_CONTENT.map((typeOption) => (
+                                    <button
+                                        key={typeOption}
+                                        onClick={() => setMediaType(typeOption)}
+                                        className={`w-full text-left px-3 md:px-4 py-2 text-[11px] md:text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary truncate ${
+                                            formData.mediaType === typeOption
+                                                ? 'text-primary bg-primary/5'
+                                                : 'text-[#2b2b2b]'
+                                        }`}
+                                    >
+                                        {typeOption}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
                     </div>
                     
                     <textarea  

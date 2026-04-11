@@ -58,7 +58,7 @@ export default function DashboardPageSection() {
   } = useDashboardController();
 
   return (
-    <section className="w-full px-6 md:px-12 lg:px-16 pb-16 pt-20 font-sans text-[#5C5C5C]">
+    <section className="w-full px-6 md:px-12 lg:px-16 pb-16 pt-10 font-sans text-[#5C5C5C]">
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -80,7 +80,7 @@ export default function DashboardPageSection() {
 
             <div className="flex flex-col justify-center">
               <div className="flex flex-wrap items-center gap-3 mb-2 md:mb-3">
-                <h1 className="text-4xl md:text-5xl font-extrabold text-[#545454] tracking-tight">
+                <h1 className="text-3xl md:text-5xl font-extrabold text-[#545454] tracking-tight">
                   Ringkasan Aktivitas
                 </h1>
 
@@ -94,8 +94,7 @@ export default function DashboardPageSection() {
               </div>
 
               <p className="text-sm md:text-base font-medium text-[#545454]/70 max-w-2xl leading-relaxed">
-                Pusat komando Anda untuk memantau performa konten, melihat
-                kalender produksi, serta mengevaluasi karya terbaru dari AI
+                Pusat komando Anda untuk memantau performa konten serta mengevaluasi karya terbaru dari AI
                 Studio.
               </p>
             </div>
@@ -112,7 +111,7 @@ export default function DashboardPageSection() {
               ? [1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className="h-[140px] rounded-3xl bg-gray-100 animate-pulse border border-gray-200"
+                    className="h-[110px] sm:h-[140px] rounded-2xl sm:rounded-3xl bg-gray-100 animate-pulse border border-gray-200"
                   />
                 ))
               : summaryStats.map((item, index) => {
@@ -123,25 +122,27 @@ export default function DashboardPageSection() {
                       key={index}
                       variants={itemVariants}
                       whileHover={{ y: -4 }}
-                      className={`relative overflow-hidden rounded-[24px] p-4 md:p-5 shadow-sm transition-all duration-300 flex flex-col justify-between group ${
+                      className={`relative overflow-hidden rounded-[18px] sm:rounded-[24px] p-2.5 sm:p-4 md:p-5 shadow-sm transition-all duration-300 flex flex-col justify-between group min-h-[110px] sm:min-h-[140px] ${
                         isFeatured
                           ? "bg-primary text-white shadow-primary/20 border-transparent"
                           : "bg-white border border-[#D9DED8]/70 text-[#2b2b2b]"
                       }`}
                     >
                       {isFeatured && (
-                        <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl group-hover:bg-white/20 transition-all duration-700" />
+                        <div className="absolute -right-5 -top-5 sm:-right-8 sm:-top-8 h-20 w-20 sm:h-32 sm:w-32 rounded-full bg-white/10 blur-2xl group-hover:bg-white/20 transition-all duration-700" />
                       )}
 
-                      <div className="relative flex items-start justify-between mb-3">
+                      <div className="relative flex items-start justify-between gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                         <h3
-                          className={`text-sm font-semibold tracking-wide ${isFeatured ? "text-white/90" : "text-[#2b2b2b]"}`}
+                          className={`text-[10px] sm:text-sm font-semibold tracking-wide leading-tight pr-1 break-words ${
+                            isFeatured ? "text-white/90" : "text-[#2b2b2b]"
+                          }`}
                         >
                           {item.title}
                         </h3>
 
                         <button
-                          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110 ${
+                          className={`flex h-5 w-5 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110 ${
                             isFeatured
                               ? "bg-white/20 text-white backdrop-blur-md border border-white/30 hover:bg-white/30 shadow-sm"
                               : "bg-white text-[#2b2b2b] border border-gray-200 hover:bg-gray-50 shadow-sm"
@@ -149,8 +150,9 @@ export default function DashboardPageSection() {
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            width="14"
-                            height="14"
+                            width="10"
+                            height="10"
+                            className="sm:w-[14px] sm:h-[14px]"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -164,27 +166,26 @@ export default function DashboardPageSection() {
                         </button>
                       </div>
 
-                      <div className="relative mb-3">
-                        <h2 className="text-4xl md:text-6xl font-bold tracking-tighter leading-none">
+                      <div className="relative mb-2 sm:mb-3">
+                        <h2 className="text-3xl font-semibold sm:text-4xl md:text-6xl md:font-bold tracking-tighter leading-none break-words">
                           {item.value}
                         </h2>
                       </div>
 
-                      <div className="relative flex items-center gap-1.5 mt-auto">
+                      <div className="relative flex items-center gap-1 mt-auto flex-wrap">
                         <div
-                          className={`hidden md:inline flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] md:text-[10px] font-bold border ${
+                          className={`flex items-center gap-0.5 rounded px-1 py-0.5 sm:px-1.5 text-[8px] sm:text-[10px] font-bold border ${
                             isFeatured
                               ? "bg-white/20 border-white/30 text-white backdrop-blur-sm"
                               : "bg-[#E8F5E9] border-[#A5D6A7] text-[#2E7D32]"
                           }`}
                         >
-                          <span>
-                            {index === 0 ? "5" : index === 1 ? "6" : "2"}
-                          </span>
+                          <span>{index === 0 ? "5" : index === 1 ? "6" : "2"}</span>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            width="8"
-                            height="8"
+                            width="7"
+                            height="7"
+                            className="sm:w-2 sm:h-2"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -195,8 +196,9 @@ export default function DashboardPageSection() {
                             <polyline points="18 15 12 9 6 15"></polyline>
                           </svg>
                         </div>
+
                         <span
-                          className={`hidden md:inline text-[10px] font-medium truncate ${
+                          className={`hidden sm:inline text-[10px] font-medium truncate ${
                             isFeatured ? "text-white/80" : "text-[#545454]/70"
                           }`}
                         >
@@ -268,9 +270,9 @@ export default function DashboardPageSection() {
                           color: "#545454",
                         }}
                         formatter={(value) => {
-  const safeValue = typeof value === "number" ? value : Number(value ?? 0);
-  return [`${safeValue} Konten`];
-}}
+                            const safeValue = typeof value === "number" ? value : Number(value ?? 0);
+                            return [`${safeValue} Konten`];
+                        }}
                         labelStyle={{
                           fontSize: "10px",
                           color: "#888",
@@ -318,106 +320,116 @@ export default function DashboardPageSection() {
             )}
           </motion.div>
         </motion.div>
-        {/* Update yang ini dulu */}
 
-        {/* --- AREA CHART (TREN KONTEN 7 HARI) --- */}
+        {/* --- AREA CHART  --- */}
         <motion.div
           variants={itemVariants}
-          className="mb-10 rounded-3xl border border-[#D9DED8]/70 bg-white p-5 md:p-8 shadow-sm"
+          className="mb-6 md:mb-10 rounded-2xl md:rounded-3xl border border-[#D9DED8]/70 bg-white p-3 sm:p-4 md:p-8 shadow-sm"
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-start justify-between mb-4 md:mb-6 gap-3">
             <div>
-              <h2 className="text-lg md:text-xl font-extrabold text-[#545454]">
+              <h2 className="text-sm sm:text-base md:text-xl font-extrabold text-[#545454] leading-tight">
                 Tren Produksi Konten
               </h2>
-              <p className="text-xs md:text-sm font-medium text-[#545454]/60 mt-1">
+              <p className="text-[10px] sm:text-xs md:text-sm font-medium text-[#545454]/60 mt-1 leading-relaxed">
                 Distribusi status konten selama bulan ini.
               </p>
             </div>
           </div>
 
-          <div className="w-full h-72 md:h-80">
-            {isLoading ? (
-              <div className="w-full h-full flex items-center justify-center bg-gray-50/50 rounded-2xl animate-pulse">
-                <span className="text-sm font-bold text-gray-400">
-                  Memuat Grafik...
-                </span>
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={chartData}
-                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                >
-                  <defs>
-                    <linearGradient
-                      id="colorDiposting"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="5%" stopColor="#39B772" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#39B772" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    vertical={false}
-                    stroke="#E5E7EB"
-                  />
-                  <XAxis
-                    dataKey="date"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: "#9CA3AF", fontSize: 10, fontWeight: 600 }}
-                    dy={10}
-                    minTickGap={25}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: "#9CA3AF", fontSize: 12, fontWeight: 600 }}
-                    dx={-10}
-                    allowDecimals={false}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      borderRadius: "12px",
-                      border: "none",
-                      boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-                    }}
-                    itemStyle={{ fontWeight: 600, fontSize: "13px" }}
-                    labelStyle={{
-                      fontWeight: 800,
-                      color: "#545454",
-                      marginBottom: "4px",
-                    }}
-                  />
-                  <Legend
-                    iconType="circle"
-                    wrapperStyle={{
-                      paddingTop: "15px",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      color: "#545454",
-                    }}
-                  />
+          {isLoading ? (
+            <div className="w-full h-[220px] sm:h-64 md:h-80 flex items-center justify-center bg-gray-50/50 rounded-2xl animate-pulse">
+              <span className="text-xs sm:text-sm font-bold text-gray-400">
+                Memuat Grafik...
+              </span>
+            </div>
+          ) : (
+            <div className="overflow-x-auto overflow-y-hidden pb-2">
+              <div className="min-w-[560px] sm:min-w-0 w-full h-[220px] sm:h-64 md:h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={chartData}
+                    margin={{ top: 10, right: 16, left: -16, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient
+                        id="colorDiposting"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop offset="5%" stopColor="#39B772" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#39B772" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
 
-                  <Area
-                    type="monotone"
-                    dataKey="Diposting"
-                    stroke="#39B772"
-                    strokeWidth={3}
-                    fillOpacity={1}
-                    fill="url(#colorDiposting)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            )}
-          </div>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="#E5E7EB"
+                    />
+
+                    <XAxis
+                      dataKey="date"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: "#9CA3AF", fontSize: 9, fontWeight: 600 }}
+                      dy={8}
+                      minTickGap={20}
+                    />
+
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: "#9CA3AF", fontSize: 10, fontWeight: 600 }}
+                      dx={-4}
+                      allowDecimals={false}
+                      width={28}
+                    />
+
+                    <Tooltip
+                      contentStyle={{
+                        borderRadius: "12px",
+                        border: "none",
+                        boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                        fontSize: "12px",
+                      }}
+                      itemStyle={{ fontWeight: 600, fontSize: "12px" }}
+                      labelStyle={{
+                        fontWeight: 800,
+                        color: "#545454",
+                        marginBottom: "4px",
+                        fontSize: "12px",
+                      }}
+                    />
+
+                    <Legend
+                      iconType="circle"
+                      wrapperStyle={{
+                        paddingTop: "12px",
+                        fontSize: "11px",
+                        fontWeight: 600,
+                        color: "#545454",
+                      }}
+                    />
+
+                    <Area
+                      type="monotone"
+                      dataKey="Diposting"
+                      stroke="#39B772"
+                      strokeWidth={2.5}
+                      fillOpacity={1}
+                      fill="url(#colorDiposting)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
         </motion.div>
 
+        {/*   */}
         <motion.div
           variants={itemVariants}
           className="sticky top-0 z-10 bg-[#FAF9F5]/90 backdrop-blur-xl py-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:bg-transparent sm:backdrop-blur-none sm:py-0 mb-6 transition-all duration-300"
@@ -457,7 +469,7 @@ export default function DashboardPageSection() {
                   {TABS.map((tab) => (
                     <button
                       key={tab}
-                      onClick={() => setActiveTab(tab as any)}
+                      onClick={() => setActiveTab(tab)}
                       className={`relative flex items-center justify-center px-3 py-3 rounded-full text-xs sm:text-sm font-bold text-center whitespace-nowrap transition-colors duration-200 focus:outline-none ${
                         activeTab === tab
                           ? "text-white"
@@ -485,14 +497,14 @@ export default function DashboardPageSection() {
           </div>
         </motion.div>
 
-{/* Riwayat Konten  */}
+        {/* Riwayat Konten  */}
         <motion.div
         variants={itemVariants}
         className="overflow-hidden rounded-[28px] border border-white/40 bg-white/50 backdrop-blur-xl shadow-[0_18px_45px_rgba(15,23,42,0.08)]"
         >
         <div className="flex items-center justify-between border-b border-white/35 bg-white/20 px-4 py-3 sm:px-5">
             <div>
-            <h2 className="text-sm sm:text-base font-bold text-[#3E4A42]">
+            <h2 className="text-sm sm:text-base md:text-xl font-bold text-[#3E4A42] pt-2">
                 Riwayat Konten
             </h2>
             <p className="text-[11px] sm:text-xs text-[#6B756F]">
@@ -500,7 +512,7 @@ export default function DashboardPageSection() {
             </p>
             </div>
 
-            <span className="rounded-full border border-white/40 bg-white/60 px-2.5 py-1 text-[11px] font-semibold text-[#526058]">
+            <span className="rounded-full border border-white/40 bg-white/60 px-2.5 py-1 text-[10px] md:text-xs font-semibold text-[#526058]">
             {filteredPosts.length} item
             </span>
         </div>

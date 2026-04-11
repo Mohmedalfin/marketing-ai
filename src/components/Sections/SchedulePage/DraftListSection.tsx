@@ -7,8 +7,7 @@ import { confirmAction } from '../../../utils/swal';
 import { Search, X } from "lucide-react";
 import { FacebookIcon, InstagramIcon, TelegramIcon } from '../../Elements/icons/SosialMedia';
 import { motion } from "framer-motion";
-
-const PLATFORMS = ["Semua", "Instagram", "Facebook", "Telegram"] as const;
+import { DraftMediaCard } from './DraftMediaCard';
 
 // Nanti akan dipindah/ubah saat kita menggarap PUT Edit
 export interface EditDraftPayload {
@@ -42,8 +41,10 @@ const formatDisplayTime = (isoStr: string): string => {
 export default function DraftListSection() {
     const [isVisible, setIsVisible]     = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [activePlatform, setActivePlatform] = useState<"Semua" | "Instagram" | "Facebook" | "Telegram">("Semua");
+    const PLATFORMS = ['Semua', 'Instagram', 'Facebook', 'Telegram'] as const;
+    type Platform = (typeof PLATFORMS)[number];
     const [editingId, setEditingId]     = useState<number | null>(null);
+    const [activePlatform, setActivePlatform] = useState<Platform>('Semua');
     const [editForm, setEditForm]       = useState<EditDraftPayload>({ title: '', description: '', date: '', time: '' });
     const [isSaving, setIsSaving]       = useState(false);
 
@@ -161,7 +162,7 @@ export default function DraftListSection() {
 
                         <div className="flex flex-col justify-center">
                             <div className="flex flex-wrap items-center gap-3 mb-2 md:mb-3">
-                                <h1 className="text-4xl md:text-5xl font-extrabold text-dark tracking-tight">
+                                <h1 className="text-3xl md:text-5xl font-extrabold text-dark tracking-tight">
                                     Daftar Draft
                                 </h1>
                                 
@@ -219,58 +220,58 @@ export default function DraftListSection() {
 
                         {/* Platform Tabs */}
                         <div className="w-full xl:w-auto xl:max-w-[320px]">
-                        <div className="w-full rounded-[24px] bg-white p-2 border border-gray-200 shadow-sm">
-                            <div className="grid grid-cols-4 gap-2 xl:flex xl:items-center">
-                            {PLATFORMS.map((platform) => (
-                                <button
-                                key={platform}
-                                onClick={() => setActivePlatform(platform as any)}
-                                className={`relative flex items-center justify-center ${
-                                    platform === 'Semua'
-                                    ? 'px-3 py-2.5'
-                                    : 'h-10 w-full xl:w-10 xl:h-10 sm:h-11'
-                                } rounded-full text-sm font-bold whitespace-nowrap transition-colors duration-200 focus:outline-none ${
-                                    activePlatform === platform
-                                    ? 'text-white'
-                                    : 'text-dark hover:text-primary'
-                                }`}
-                                >
-                                {activePlatform === platform && (
-                                    <motion.div
-                                    layoutId="activePlatformOutlineDraft"
-                                    className="absolute inset-0 bg-primary rounded-full shadow-md"
-                                    initial={false}
-                                    transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-                                    />
-                                )}
+                            <div className="w-full rounded-[24px] bg-white p-2 border border-gray-200 shadow-sm">
+                                <div className="grid grid-cols-4 gap-2 xl:flex xl:items-center">
+                                {PLATFORMS.map((platform) => (
+                                    <button
+                                    key={platform}
+                                    onClick={() => setActivePlatform(platform)}
+                                    className={`relative flex items-center justify-center ${
+                                        platform === 'Semua'
+                                        ? 'px-3 py-2.5'
+                                        : 'h-10 w-full xl:w-10 xl:h-10 sm:h-11'
+                                    } rounded-full text-sm font-bold whitespace-nowrap transition-colors duration-200 focus:outline-none ${
+                                        activePlatform === platform
+                                        ? 'text-white'
+                                        : 'text-dark hover:text-primary'
+                                    }`}
+                                    >
+                                    {activePlatform === platform && (
+                                        <motion.div
+                                        layoutId="activePlatformOutlineDraft"
+                                        className="absolute inset-0 bg-primary rounded-full shadow-md"
+                                        initial={false}
+                                        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                                        />
+                                    )}
 
-                                <span className="relative z-10 flex items-center justify-center">
-                                    {platform === 'Instagram' ? (
-                                    <InstagramIcon
-                                        className={`w-5 h-5 sm:w-[22px] sm:h-[22px] object-contain ${
-                                        activePlatform === platform ? 'drop-shadow-sm' : ''
-                                        }`}
-                                    />
-                                    ) : platform === 'Facebook' ? (
-                                    <FacebookIcon
-                                        className={`w-5 h-5 sm:w-[22px] sm:h-[22px] object-contain ${
-                                        activePlatform === platform ? 'drop-shadow-sm' : ''
-                                        }`}
-                                    />
-                                    ) : platform === 'Telegram' ? (
-                                        <TelegramIcon
+                                    <span className="relative z-10 flex items-center justify-center">
+                                        {platform === 'Instagram' ? (
+                                        <InstagramIcon
                                             className={`w-5 h-5 sm:w-[22px] sm:h-[22px] object-contain ${
                                             activePlatform === platform ? 'drop-shadow-sm' : ''
                                             }`}
                                         />
-                                    ) : (
-                                    platform
-                                    )}
-                                </span>
-                                </button>
-                            ))}
+                                        ) : platform === 'Facebook' ? (
+                                        <FacebookIcon
+                                            className={`w-5 h-5 sm:w-[22px] sm:h-[22px] object-contain ${
+                                            activePlatform === platform ? 'drop-shadow-sm' : ''
+                                            }`}
+                                        />
+                                        ) : platform === 'Telegram' ? (
+                                            <TelegramIcon
+                                                className={`w-5 h-5 sm:w-[22px] sm:h-[22px] object-contain ${
+                                                activePlatform === platform ? 'drop-shadow-sm' : ''
+                                                }`}
+                                            />
+                                        ) : (
+                                        platform
+                                        )}
+                                    </span>
+                                    </button>
+                                ))}
+                                </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                 </div>
@@ -310,26 +311,19 @@ export default function DraftListSection() {
                                         ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}
                                     `}
                                 >
-                                    {/* Media Background - Gambar atau Video */}
-                                    {(draft.media_type?.toLowerCase() === 'video' || (!draft.media_type && draft.video_url)) && draft.video_url ? (
-                                        <video
-                                            src={draft.video_url}
-                                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                            style={{
-                                                filter: isEditing ? 'blur(8px) brightness(0.6)' : 'none'
-                                            }}
-                                            autoPlay muted loop playsInline
-                                        />
-                                    ) : (
-                                        <img 
-                                            src={draft.image_url} 
-                                            alt={draft.title} 
-                                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                            style={{
-                                                filter: isEditing ? 'blur(8px) brightness(0.6)' : 'none'
-                                            }}
-                                        />
-                                    )}
+                                    {/* Media Background — dirender lewat DraftMediaCard
+                                         yang hanya play/load ketika card masuk viewport */}
+                                    <DraftMediaCard
+                                        isVideo={
+                                            (draft.media_type?.toLowerCase() === 'video' ||
+                                            (!draft.media_type && !!draft.video_url)) &&
+                                            !!draft.video_url
+                                        }
+                                        videoUrl={draft.video_url}
+                                        imageUrl={draft.image_url}
+                                        title={draft.title}
+                                        isEditing={isEditing}
+                                    />
                                     
                                     {/* Gradient Overlay untuk teks agar mudah dibaca */}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/5 pointer-events-none" />
