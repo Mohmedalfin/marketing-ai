@@ -267,7 +267,10 @@ export default function DashboardPageSection() {
                           fontWeight: 800,
                           color: "#545454",
                         }}
-                        formatter={(value: number) => [`${value} Konten`]}
+                        formatter={(value) => {
+  const safeValue = typeof value === "number" ? value : Number(value ?? 0);
+  return [`${safeValue} Konten`];
+}}
                         labelStyle={{
                           fontSize: "10px",
                           color: "#888",
