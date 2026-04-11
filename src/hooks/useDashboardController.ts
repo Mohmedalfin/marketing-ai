@@ -1,116 +1,94 @@
 import { useState, useMemo, useEffect } from "react";
 import { FolderKanban, ClipboardList, CheckSquare } from "lucide-react";
+import { getSchedulesAPI } from "../services/scheduleService";
 
 // --- TIPE DATA ---
-export type PostStatus = "Diposting" | "Draft";
+export type PostStatus = "PUBLISHED" | "DRAFT";
 
 export interface PostItem {
     id: number;
     title: string;
     date: string;
     time: string;
+    rawDate: Date | null;
     likes: number;
     status: PostStatus;
-    platform: string;
+    platform: string[];
     tags: string[];
 }
 
 export interface ChartDataPoint {
     date: string;
     Diposting: number;
-    Draft: number;
 }
 
-// --- DUMMY DATA UNTUK KERANGKA ---
-const DUMMY_POSTS: PostItem[] = [
-    {
-        id: 1,
-        title: "Promo Spesial Ramadhan Segera Hadir",
-        date: "19 Mar 2026",
-        time: "15:45",
-        likes: 135,
-        status: "Diposting",
-        platform: "Instagram",
-        tags: ["Promo", "Ramadhan"]
-    },
-    {
-        id: 2,
-        title: "Koleksi Terbaru Sepatu Lari Pria",
-        date: "20 Mar 2026",
-        time: "10:30",
-        likes: 0,
-        status: "Draft",
-        platform: "Instagram",
-        tags: ["Koleksi Baru", "Sepatu"]
-    },
-    {
-        id: 3,
-        title: "Tips Produktivitas Ala Kreator",
-        date: "15 Mar 2026",
-        time: "19:00",
-        likes: 450,
-        status: "Diposting",
-        platform: "TikTok",
-        tags: ["Tips", "Edukasi"]
-    },
-    {
-        id: 4,
-        title: "Behind The Scene Pembuatan Produk",
-        date: "21 Mar 2026",
-        time: "13:00",
-        likes: 0,
-        status: "Draft",
-        platform: "TikTok",
-        tags: ["BTS", "Produk"]
-    },
-    {
-        id: 5,
-        title: "Giveaway Akhir Bulan!",
-        date: "25 Mar 2026",
-        time: "16:00",
-        likes: 0,
-        status: "Draft",
-        platform: "Facebook",
-        tags: ["Event", "Giveaway"]
-    }
-];
-
-// Data chart tren 7 hari terakhir (Bisa dikalkulasi dari DUMMY_POSTS sebenarnya, tapi kita siapkan kerangka statis dulu)
-const DUMMY_CHART_DATA: ChartDataPoint[] = [
-    { date: "15 Mar", Diposting: 2, Draft: 1 },
-    { date: "16 Mar", Diposting: 1, Draft: 0 },
-    { date: "17 Mar", Diposting: 3, Draft: 2 },
-    { date: "18 Mar", Diposting: 1, Draft: 1 },
-    { date: "19 Mar", Diposting: 4, Draft: 0 },
-    { date: "20 Mar", Diposting: 0, Draft: 2 },
-    { date: "21 Mar", Diposting: 0, Draft: 4 },
-];
+export interface PlatformStat {
+    name: string;
+    value: number;
+    color: string;
+}
 
 export const useDashboardController = () => {
-    // State UI
     const [searchQuery, setSearchQuery] = useState("");
-    const [activeTab, setActiveTab] = useState<"Semua" | PostStatus>("Semua");
+    const [activeTab, setActiveTab] = useState<"Semua" | PostStatus | "Diposting" | "Draft">("Semua");
     
-    // State Data (Kerangka untuk nantinya diisi dari API)
     const [posts, setPosts] = useState<PostItem[]>([]);
-    const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Simulasi Fetching dari API
     useEffect(() => {
         const fetchDashboardData = async () => {
             setIsLoading(true);
             try {
-                // Di masa depan: panggil fetch API di sini
-                // const response = await getSchedulesAPI();
-                // setPosts(response); 
+                const data = await getSchedulesAPI();
                 
-                // --- Simulasi Delay 800ms ---
-                await new Promise(res => setTimeout(res, 800));
-                
-                setPosts(DUMMY_POSTS);
-                setChartData(DUMMY_CHART_DATA);
+                const mappedPosts: PostItem[] = data.map(item => {
+                    let dateStr = "Unknown Date";
+                    let timeStr = "00:00";
+                    let rawDate = null;
 
+                    if (item.scheduled_time) {
+                        try {
+                            const d = new Date(item.scheduled_time);
+                            rawDate = d;
+                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                            dateStr = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+                            timeStr = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+                        } catch {}
+                    }
+
+                    let platArr: string[] = [];
+                    if (Array.isArray(item.platform)) {
+                        platArr = item.platform;
+                    } else if (typeof item.platform === 'string') {
+                        try {
+                            const parsed = JSON.parse(item.platform);
+                            platArr = Array.isArray(parsed) ? parsed : [item.platform];
+                        } catch {
+                            platArr = [item.platform];
+                        }
+                    }
+
+                    return {
+                        id: item.id,
+                        title: item.title || "Tanpa Judul",
+                        date: dateStr,
+                        time: timeStr,
+                        rawDate: rawDate,
+                        likes: 0, 
+                        status: item.status as PostStatus,
+                        platform: platArr,
+                        tags: item.category ? [item.category] : []
+                    };
+                });
+
+                mappedPosts.sort((a, b) => {
+                    if (b.rawDate && a.rawDate) {
+                        return b.rawDate.getTime() - a.rawDate.getTime();
+                    }
+                    return b.id - a.id;
+                });
+                
+                setPosts(mappedPosts);
             } catch (error) {
                 console.error("Gagal memuat data dashboard", error);
             } finally {
@@ -121,43 +99,101 @@ export const useDashboardController = () => {
         fetchDashboardData();
     }, []);
 
-    // --- KALKULASI STATISTIK RINGKASAN ---
     const summaryStats = useMemo(() => {
-        const total = posts.length;
-        const draft = posts.filter(p => p.status === "Draft").length;
-        const diposting = posts.filter(p => p.status === "Diposting").length;
+        const draft = posts.filter(p => p.status === "DRAFT").length;
+        const published = posts.filter(p => p.status === "PUBLISHED").length;
+        const total = draft + published;
 
         return [
             { title: "Total Konten", value: total, icon: FolderKanban, color: "text-[#3B82F6]", bg: "bg-[#EBF5FF]" },
             { title: "Draft Aktif", value: draft, icon: ClipboardList, color: "text-[#D97706]", bg: "bg-[#FEF3C7]" },
-            { title: "Diposting", value: diposting, icon: CheckSquare, color: "text-[#39B772]", bg: "bg-[#E3F2E1]" },
+            { title: "Diposting", value: published, icon: CheckSquare, color: "text-[#39B772]", bg: "bg-[#E3F2E1]" },
         ];
     }, [posts]);
 
-    // --- LOGIKA FILTERING PENCARIAN & TAB ---
+    const platformStats = useMemo(() => {
+        const platformCounts: Record<string, number> = {};
+        
+        posts.forEach(post => {
+            post.platform.forEach(p => {
+                const lower = p.toLowerCase();
+                if (lower !== 'all') {
+                    const formatted = lower.charAt(0).toUpperCase() + lower.slice(1);
+                    platformCounts[formatted] = (platformCounts[formatted] || 0) + 1;
+                }
+            });
+            if (post.platform.length === 1 && post.platform[0].toLowerCase() === 'all') {
+                const allPlatforms = ['Instagram', 'Facebook', 'Telegram'];
+                allPlatforms.forEach(p => {
+                    platformCounts[p] = (platformCounts[p] || 0) + 1;
+                });
+            }
+        });
+
+        const colors = ["#E1306C", "#1877F2", "#24A1DE", "#D97706", "#39B772"];
+        return Object.keys(platformCounts).map((name, index) => ({
+            name,
+            value: platformCounts[name],
+            color: colors[index % colors.length]
+        }));
+    }, [posts]);
+
+    const chartData = useMemo(() => {
+        const buckets: Record<string, ChartDataPoint> = {};
+        
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        for (let day = 1; day <= daysInMonth; day++) {
+            const d = new Date(year, month, day);
+            const dateKey = d.toLocaleDateString('en-CA'); 
+            const shortDate = `${d.getDate()} ${d.toLocaleString('id-ID', { month: 'short' })}`;
+            
+            buckets[dateKey] = {
+                date: shortDate,
+                Diposting: 0
+            };
+        }
+
+        posts.forEach(post => {
+            if (post.rawDate) {
+                const postDateKey = post.rawDate.toLocaleDateString('en-CA');
+                if (buckets[postDateKey]) {
+                    if (post.status === "PUBLISHED") {
+                        buckets[postDateKey].Diposting += 1;
+                    }
+                }
+            }
+        });
+
+        return Object.values(buckets);
+    }, [posts]);
+
     const filteredPosts = useMemo(() => {
         return posts.filter(post => {
             const matchesSearch = 
                 post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                 post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                post.platform.toLowerCase().includes(searchQuery.toLowerCase());
+                post.platform.some(p => p.toLowerCase().includes(searchQuery.toLowerCase()));
             
-            const matchesTab = activeTab === "Semua" || post.status === activeTab;
+            let targetTab = activeTab;
+            if (activeTab === "Diposting") targetTab = "PUBLISHED";
+            if (activeTab === "Draft") targetTab = "DRAFT";
+            
+            const matchesTab = activeTab === "Semua" || post.status === targetTab;
             
             return matchesSearch && matchesTab;
         });
     }, [posts, searchQuery, activeTab]);
 
     return {
-        // Data Mentah
         isLoading,
         chartData,
         summaryStats,
-        
-        // Data Terfilter
+        platformStats,
         filteredPosts,
-        
-        // State Filter
         activeTab,
         setActiveTab,
         searchQuery,

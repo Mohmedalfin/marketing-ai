@@ -21,7 +21,7 @@ export interface AiScheduleRequest {
   image_url: string;
   video_url: string;
   media_type: string; // 'foto' | 'video'
-  platform: string;
+  platform: string[];
   scheduled_time: string; // ISO String
 }
 

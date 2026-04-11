@@ -5,10 +5,10 @@ import type { ScheduleItem } from '../../../types/schedule';
 import { ToastNotification } from '../../Elements/ToastNotification';
 import { confirmAction } from '../../../utils/swal';
 import { Search, X } from "lucide-react";
-import { FacebookIcon, InstagramIcon, TikTokIcon } from '../../Elements/icons/SosialMedia';
+import { FacebookIcon, InstagramIcon, TelegramIcon } from '../../Elements/icons/SosialMedia';
 import { motion } from "framer-motion";
 
-const PLATFORMS = ["Semua", "Instagram", "Facebook", "TikTok"] as const;
+const PLATFORMS = ["Semua", "Instagram", "Facebook", "Telegram"] as const;
 
 // Nanti akan dipindah/ubah saat kita menggarap PUT Edit
 export interface EditDraftPayload {
@@ -42,7 +42,7 @@ const formatDisplayTime = (isoStr: string): string => {
 export default function DraftListSection() {
     const [isVisible, setIsVisible]     = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [activePlatform, setActivePlatform] = useState<"Semua" | "Instagram" | "TikTok" | "Facebook">("Semua");
+    const [activePlatform, setActivePlatform] = useState<"Semua" | "Instagram" | "Facebook" | "Telegram">("Semua");
     const [editingId, setEditingId]     = useState<number | null>(null);
     const [editForm, setEditForm]       = useState<EditDraftPayload>({ title: '', description: '', date: '', time: '' });
     const [isSaving, setIsSaving]       = useState(false);
@@ -124,7 +124,23 @@ export default function DraftListSection() {
     const filteredDrafts = drafts.filter((d) => {
         const matchesSearch = (d.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                               (d.caption || '').toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesPlatform = activePlatform === "Semua" || (d.platform && d.platform.toLowerCase() === activePlatform.toLowerCase());
+        
+        let platArr: string[] = [];
+        if (Array.isArray(d.platform)) {
+            platArr = d.platform;
+        } else if (typeof d.platform === 'string') {
+            try {
+                const parsed = JSON.parse(d.platform);
+                platArr = Array.isArray(parsed) ? parsed : [d.platform];
+            } catch {
+                 platArr = [d.platform];
+            }
+        }
+
+        const matchesPlatform = activePlatform === "Semua" || platArr.some(p => 
+            p.toLowerCase() === activePlatform.toLowerCase() || p.toLowerCase() === 'all'
+        );
+        
         return matchesSearch && matchesPlatform;
     });
 
@@ -166,62 +182,99 @@ export default function DraftListSection() {
 
                 </div>
 
-                
-
                 {/* Search & Filter Bar */}
-                <div className={`relative mb-10 w-full transition-all duration-700 delay-200 ease-out ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-                    <div className="flex flex-col xl:flex-row gap-4 items-start xl:items-center justify-between">
+                <div
+                    className={`relative mb-10 w-full transition-all duration-700 delay-200 ease-out ${
+                        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+                    }`}
+                    >
+                    <div className="flex flex-col xl:flex-row gap-3 md:gap-4 items-stretch xl:items-center justify-between">
+                        
                         {/* Search Input */}
-                        <div className="flex w-full sm:w-[400px] md:w-[1000px] items-center justify-between rounded-full bg-white px-5 py-5 shadow-sm focus-within:ring-2 focus-within:ring-primary/50 transition-all border border-gray-200 flex-shrink-0">
-                            <div className="flex flex-1 items-center gap-3">
-                                <Search className="h-5 w-5 text-gray-400 shrink-0" strokeWidth={2.5} />
-                                <input
-                                    type="text"
-                                    placeholder="Cari konten draft..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full bg-transparent text-sm font-semibold text-dark focus:outline-hidden placeholder:text-gray-400"
-                                />
+                        <div className="w-full xl:flex-1">
+                        <div className="flex w-full items-center justify-between rounded-full bg-white px-4 md:px-5 py-4 md:py-5 shadow-sm focus-within:ring-2 focus-within:ring-primary/50 transition-all border border-gray-200">
+                            <div className="flex flex-1 items-center gap-3 min-w-0">
+                            <Search className="h-5 w-5 text-gray-400 shrink-0" strokeWidth={2.5} />
+                            <input
+                                type="text"
+                                placeholder="Cari konten draft..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full min-w-0 bg-transparent text-sm font-semibold text-dark focus:outline-hidden placeholder:text-gray-400"
+                            />
                             </div>
+
                             {searchQuery ? (
-                                <button 
-                                    onClick={() => setSearchQuery("")}
-                                    className="flex shrink-0 ml-2 items-center"
-                                >
-                                    <X className="h-4 w-4 text-gray-400 hover:text-red-400 transition-colors" />
-                                </button>
+                            <button
+                                onClick={() => setSearchQuery('')}
+                                className="flex shrink-0 ml-2 items-center"
+                            >
+                                <X className="h-4 w-4 text-gray-400 hover:text-red-400 transition-colors" />
+                            </button>
                             ) : (
-                                <div className="flex shrink-0 ml-2 items-center pointer-events-none"></div>
+                            <div className="flex shrink-0 ml-2 items-center pointer-events-none" />
                             )}
+                        </div>
                         </div>
 
                         {/* Platform Tabs */}
-                        <div className="flex w-full sm:w-auto items-center gap-2 overflow-x-auto rounded-full bg-white p-2 border border-gray-200 shadow-sm scrollbar-hide">
+                        <div className="w-full xl:w-auto xl:max-w-[320px]">
+                        <div className="w-full rounded-[24px] bg-white p-2 border border-gray-200 shadow-sm">
+                            <div className="grid grid-cols-4 gap-2 xl:flex xl:items-center">
                             {PLATFORMS.map((platform) => (
                                 <button
-                                    key={platform}
-                                    onClick={() => setActivePlatform(platform as any)}
-                                    className={`relative flex items-center justify-center ${platform === "Semua" ? "px-5 py-2.5" : "w-10 h-10 sm:w-11 sm:h-11"} rounded-full text-sm font-bold whitespace-nowrap transition-colors duration-200 focus:outline-none ${activePlatform === platform ? "text-white" : "text-dark hover:text-primary"}`}
+                                key={platform}
+                                onClick={() => setActivePlatform(platform as any)}
+                                className={`relative flex items-center justify-center ${
+                                    platform === 'Semua'
+                                    ? 'px-3 py-2.5'
+                                    : 'h-10 w-full xl:w-10 xl:h-10 sm:h-11'
+                                } rounded-full text-sm font-bold whitespace-nowrap transition-colors duration-200 focus:outline-none ${
+                                    activePlatform === platform
+                                    ? 'text-white'
+                                    : 'text-dark hover:text-primary'
+                                }`}
                                 >
-                                    {activePlatform === platform && (
-                                        <motion.div
-                                            layoutId="activePlatformOutlineDraft"
-                                            className="absolute inset-0 bg-primary rounded-full shadow-md"
-                                            initial={false}
-                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                {activePlatform === platform && (
+                                    <motion.div
+                                    layoutId="activePlatformOutlineDraft"
+                                    className="absolute inset-0 bg-primary rounded-full shadow-md"
+                                    initial={false}
+                                    transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                                    />
+                                )}
+
+                                <span className="relative z-10 flex items-center justify-center">
+                                    {platform === 'Instagram' ? (
+                                    <InstagramIcon
+                                        className={`w-5 h-5 sm:w-[22px] sm:h-[22px] object-contain ${
+                                        activePlatform === platform ? 'drop-shadow-sm' : ''
+                                        }`}
+                                    />
+                                    ) : platform === 'Facebook' ? (
+                                    <FacebookIcon
+                                        className={`w-5 h-5 sm:w-[22px] sm:h-[22px] object-contain ${
+                                        activePlatform === platform ? 'drop-shadow-sm' : ''
+                                        }`}
+                                    />
+                                    ) : platform === 'Telegram' ? (
+                                        <TelegramIcon
+                                            className={`w-5 h-5 sm:w-[22px] sm:h-[22px] object-contain ${
+                                            activePlatform === platform ? 'drop-shadow-sm' : ''
+                                            }`}
                                         />
+                                    ) : (
+                                    platform
                                     )}
-                                    <span className="relative z-10 flex items-center justify-center">
-                                        {platform === 'Instagram' ? <InstagramIcon className={`w-5 h-5 sm:w-[22px] sm:h-[22px] object-contain ${activePlatform === platform ? 'drop-shadow-sm' : ''}`} /> :
-                                         platform === 'Facebook' ? <FacebookIcon className={`w-5 h-5 sm:w-[22px] sm:h-[22px] object-contain ${activePlatform === platform ? 'drop-shadow-sm' : ''}`} /> :
-                                         platform === 'TikTok' ? <TikTokIcon className={`w-5 h-5 sm:w-[22px] sm:h-[22px] object-contain ${activePlatform === platform ? 'drop-shadow-sm' : ''}`} /> :
-                                         platform}
-                                    </span>
+                                </span>
                                 </button>
                             ))}
+                            </div>
+                        </div>
                         </div>
                     </div>
                 </div>
+                
 
                 {error && (
                     <div className="mb-6 rounded-xl bg-red-50 border border-red-200 px-5 py-3 text-sm font-medium text-red-600 flex items-center gap-2">
@@ -281,10 +334,46 @@ export default function DraftListSection() {
                                     {/* Gradient Overlay untuk teks agar mudah dibaca */}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/5 pointer-events-none" />
 
-                                    {/* Area Konten di atas background */}
                                     <div className="relative z-10 w-full h-full flex flex-col justify-end p-4 md:p-5">
                                         
-                                        {/* Status & Delete */}
+                                        <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-40">
+                                            {(() => {
+                                                let platArr: string[] = [];
+                                                if (Array.isArray(draft.platform)) platArr = draft.platform;
+                                                else if (typeof draft.platform === 'string') {
+                                                    try {
+                                                        const parsed = JSON.parse(draft.platform);
+                                                        platArr = Array.isArray(parsed) ? parsed : [draft.platform];
+                                                    } catch {
+                                                        platArr = [draft.platform];
+                                                    }
+                                                }
+                                                
+                                                if (platArr.some(p => p.toLowerCase() === 'all')) {
+                                                    return (
+                                                        <span className="rounded-full bg-white/20 backdrop-blur-md border border-white/20 px-2.5 py-1 text-[9px] font-bold text-white shadow-sm flex items-center gap-1.5">
+                                                            Semua Platform
+                                                        </span>
+                                                    );
+                                                }
+                                                
+                                                return platArr.map((p, i) => {
+                                                    const pl = p.toLowerCase();
+                                                    let Icon = null;
+                                                    if (pl === 'instagram') Icon = InstagramIcon;
+                                                    else if (pl === 'facebook') Icon = FacebookIcon;
+                                                    else if (pl === 'telegram') Icon = TelegramIcon;
+                                                    
+                                                    return (
+                                                        <span key={`${draft.id}-plat-${i}`} className="rounded-full bg-white/20 backdrop-blur-md border border-white/20 pl-1.5 pr-2.5 py-1 text-[9px] font-bold text-white shadow-sm flex items-center gap-1.5 w-max">
+                                                            {Icon && <Icon className="w-3.5 h-3.5 object-contain" />}
+                                                            <span className="capitalize">{p}</span>
+                                                        </span>
+                                                    );
+                                                });
+                                            })()}
+                                        </div>
+
                                         <div className="absolute top-4 right-4 flex items-center gap-2">
                                             <span className="rounded-full bg-[#F98C23] px-3 py-1 text-[9px] md:text-[10px] font-bold text-white shadow-md backdrop-blur-sm">
                                                 {draft.status}

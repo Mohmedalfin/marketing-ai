@@ -6,53 +6,72 @@ interface ToastNotificationProps {
     message: string;
     isVisible: boolean;
     onClose: () => void;
-    type?: 'error' | 'success'; // Bisa diekspansi untuk tipe notif lain
+    type?: 'error' | 'success';
+    positionClassName?: string;
 }
 
-export const ToastNotification: React.FC<ToastNotificationProps> = ({ 
-    message, 
-    isVisible, 
-    onClose, 
-    type = 'error' 
+export const ToastNotification: React.FC<ToastNotificationProps> = ({
+    message,
+    isVisible,
+    onClose,
+    type = 'error',
+    positionClassName = 'top-20 sm:top-24'
 }) => {
     if (!isVisible) return null;
 
     const isError = type === 'error';
-    const bgClass = isError ? 'bg-red-50 border-red-500' : 'bg-green-50 border-green-500';
-    const textClass = isError ? 'text-red-700' : 'text-green-700';
-    const iconColorClass = isError ? 'text-red-500' : 'text-green-500';
-    const btnClass = isError ? 'text-red-400 hover:bg-red-100 hover:text-red-600 focus:ring-red-500' : 'text-green-400 hover:bg-green-100 hover:text-green-600 focus:ring-green-500';
+
+    const iconWrapClass = isError
+        ? 'bg-red-50 text-red-500'
+        : 'bg-emerald-50 text-emerald-500';
+
+    const textClass = isError ? 'text-red-600' : 'text-emerald-600';
 
     return (
-        <div className="fixed top-24 right-6 z-[100] animate-in fade-in slide-in-from-top-4 slide-in-from-right-8 duration-300">
-            <div className={`flex max-w-sm items-center justify-between gap-4 rounded-lg border-l-4 p-4 shadow-xl ${bgClass}`}>
+        <div className={`fixed ${positionClassName} left-1/2 z-[100] w-[calc(100%-32px)] max-w-[320px] -translate-x-1/2 animate-in fade-in slide-in-from-top-3 duration-300 sm:${positionClassName} sm:right-6 sm:left-auto sm:w-full sm:max-w-[340px] sm:translate-x-0 sm:slide-in-from-right-6`}>
+            <div className="flex items-start gap-3 rounded-2xl border border-gray-200 bg-white/95 px-3.5 py-3 shadow-lg backdrop-blur-md sm:px-4 sm:py-3.5">
                 
-                <div className="flex items-center gap-3">
+                <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${iconWrapClass}`}>
                     {isError ? (
-                        <svg className={`h-6 w-6 shrink-0 ${iconColorClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2.2"
+                                d="M12 8v4m0 4h.01M10.29 3.86l-7.5 13A2 2 0 004.5 20h15a2 2 0 001.71-3.14l-7.5-13a2 2 0 00-3.42 0z"
+                            />
                         </svg>
                     ) : (
-                        <svg className={`h-6 w-6 shrink-0 ${iconColorClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2.2"
+                                d="M9 12.75l2.25 2.25L15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
                         </svg>
                     )}
-                    <p className={`text-sm font-semibold leading-tight ${textClass}`}>
+                </div>
+
+                <div className="min-w-0 flex-1">
+                    <p className="text-[13px] font-semibold leading-snug text-[#2b2b2b] sm:text-sm">
                         {message}
+                    </p>
+                    <p className={`mt-1 text-[11px] font-medium ${textClass}`}>
+                        {isError ? 'Terjadi kendala pada proses' : 'Aksi berhasil diproses'}
                     </p>
                 </div>
 
-                <button 
+                <button
                     type="button"
                     onClick={onClose}
-                    className={`shrink-0 rounded-md p-1 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-white ${btnClass}`}
+                    className="shrink-0 rounded-full p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-200"
                 >
                     <span className="sr-only">Tutup notifikasi</span>
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-                
             </div>
         </div>
     );

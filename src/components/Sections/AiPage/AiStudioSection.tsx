@@ -1,4 +1,4 @@
-import { InstagramIcon } from '../../Elements/icons/SosialMedia';
+import { InstagramIcon, FacebookIcon, TelegramIcon } from '../../Elements/icons/SosialMedia';
 import { 
     useAiStudioController, 
     STYLE_OPTIONS, 
@@ -255,11 +255,12 @@ const AiStudioSection = () => {
                     onClick={() => togglePlatformDropdown()}
                     className="relative z-20 flex items-center gap-3 rounded-full border border-primary px-4 py-2 md:py-2.5 bg-white cursor-pointer hover:bg-light-bg transition-colors focus:outline-hidden"
                 >
-                    {formData.platforms.length === 1 && formData.platforms[0] === 'Instagram' && (
-                        <InstagramIcon className="w-4 h-4 md:w-5 md:h-5 object-contain" />
-                    )}
-                    <span className={`text-xs md:text-sm font-bold text-dark grow text-left ${!(formData.platforms.length === 1 && formData.platforms[0] === 'Instagram') ? 'pl-2' : ''}`}>
+                    {formData.platforms.length === 1 && formData.platforms[0] === 'Instagram' && <InstagramIcon className="w-4 h-4 md:w-5 md:h-5 object-contain" />}
+                    {formData.platforms.length === 1 && formData.platforms[0] === 'Facebook' && <FacebookIcon className="w-4 h-4 md:w-5 md:h-5 object-contain" />}
+                    {formData.platforms.length === 1 && formData.platforms[0] === 'Telegram' && <TelegramIcon className="w-4 h-4 md:w-5 md:h-5 object-contain" />}
+                    <span className={`text-xs md:text-sm font-bold text-dark grow text-left ${!(formData.platforms.length === 1 && ['Instagram', 'Facebook', 'Telegram'].includes(formData.platforms[0])) ? 'pl-2' : ''}`}>
                         {formData.platforms.length === 0 ? 'Pilih Platform' 
+                            : formData.platforms.includes('All') ? 'Semua Platform'
                             : formData.platforms.length === 1 ? formData.platforms[0] 
                             : `${formData.platforms.length} Platform Terpilih`}
                     </span>
@@ -277,7 +278,9 @@ const AiStudioSection = () => {
                             >
                                 <div className="flex items-center gap-3">
                                     {platform === 'Instagram' && <InstagramIcon className="w-5 h-5 object-contain" />}
-                                    <span className={`${platform !== 'Instagram' ? 'pl-8' : ''}`}>{platform}</span>
+                                    {platform === 'Facebook' && <FacebookIcon className="w-5 h-5 object-contain" />}
+                                    {platform === 'Telegram' && <TelegramIcon className="w-5 h-5 object-contain" />}
+                                    <span className={`${!['Instagram', 'Facebook', 'Telegram'].includes(platform) ? 'pl-8' : ''}`}>{platform}</span>
                                 </div>
                                 <div className={`shrink-0 flex items-center justify-center w-5 h-5 rounded border ${isSelected ? 'bg-primary border-primary text-white' : 'border-gray-300 bg-white'}`}>
                                     {isSelected && <CheckIcon />}

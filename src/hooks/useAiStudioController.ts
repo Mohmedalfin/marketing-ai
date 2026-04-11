@@ -12,9 +12,10 @@ export const STYLE_OPTIONS = [
 ];
 
 export const PLATFORM_OPTIONS = [
+    'All',
     'Instagram',
     'Facebook',
-    'TikTok',
+    'Telegram',
 ];
 
 
@@ -173,11 +174,18 @@ export const useAiStudioController = () => {
     };
 
     const togglePlatform = (platform: string) => {
-        // Hanya satu platform yang dipilih (sesuai req schema belakang)
-        setFormData(prev => ({
-            ...prev,
-            platforms: [platform]
-        }));
+        setFormData(prev => {
+            const currentPlatforms = prev.platforms;
+            if (platform === 'All') {
+                return { ...prev, platforms: ['All'] };
+            }
+
+            const newPlatforms = currentPlatforms.includes(platform)
+                ? currentPlatforms.filter(p => p !== platform)
+                : [...currentPlatforms.filter(p => p !== 'All'), platform];
+
+            return { ...prev, platforms: newPlatforms };
+        });
     };
 
     const setScheduledDate = (date: string) => setFormData(prev => ({ ...prev, scheduledDate: date }));
@@ -247,7 +255,7 @@ export const useAiStudioController = () => {
                 image_url: isVideo ? '' : (aiStudio.generatedPoster ?? ''),
                 video_url: isVideo ? (aiStudio.generatedVideo ?? '') : '',
                 media_type: formData.mediaType.toLowerCase(),
-                platform: formData.platforms[0] || "Instagram",
+                platform: formData.platforms.map(p => p.toLowerCase()),
                 scheduled_time: dateTimeString
             };
             

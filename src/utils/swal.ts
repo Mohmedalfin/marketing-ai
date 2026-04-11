@@ -2,17 +2,22 @@ import Swal from 'sweetalert2';
 
 // Base theme settings injected to Swal
 export const ThemedSwal = Swal.mixin({
-    customClass: {
-        confirmButton: 'bg-[#39B772] hover:bg-[#2d965d] text-white font-bold py-2 px-6 rounded-xl shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-[#39B772]/50 focus:ring-offset-2',
-        cancelButton: 'bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-gray-400/50 focus:ring-offset-2',
-        popup: 'rounded-2xl shadow-xl border border-gray-100 p-4 font-poppins',
-        title: 'text-xl font-bold text-[#545454] font-poppins',
-        htmlContainer: 'text-sm font-medium text-gray-500 font-poppins',
-        icon: 'border-0', // Remove default icon border if needed
-        actions: 'gap-3 mt-6'
-    },
-    buttonsStyling: false,
-    reverseButtons: true, // Typically Cancel on the left, Confirm on right
+  customClass: {
+    confirmButton:
+      'bg-[#39B772] hover:bg-[#2d965d] text-white font-semibold text-sm py-2 px-4 md:px-5 rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#39B772]/40 focus:ring-offset-2',
+    cancelButton:
+      'bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm py-2 px-4 md:px-5 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-gray-300/60 focus:ring-offset-2',
+    popup:
+      'rounded-2xl md:rounded-3xl shadow-xl border border-gray-100 font-poppins',
+    title:
+      'text-base md:text-xl font-bold text-[#545454] font-poppins',
+    htmlContainer:
+      'text-[13px] md:text-sm font-medium text-gray-500 font-poppins',
+    icon: 'border-0',
+    actions: 'gap-2 md:gap-3 mt-4 md:mt-6 w-full'
+  },
+  buttonsStyling: false,
+  reverseButtons: true,
 });
 
 /**
@@ -74,7 +79,7 @@ export const showToastContent = (title: string, icon: 'success' | 'error' | 'war
         timer: 3000,
         timerProgressBar: true,
         customClass: {
-            container: 'mt-20 mr-4', // offset from the header
+            container: 'mt-20 mr-4', 
             popup: 'rounded-xl shadow-lg border border-gray-100 font-poppins',
             title: 'text-sm font-semibold text-[#545454] font-poppins'
         }

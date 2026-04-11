@@ -6,7 +6,7 @@ export interface ScheduleItem {
   media_type?: string; // 'foto' | 'video'
   scheduled_time: string; // ISO format
   user_id: number;
-  platform: string;
+  platform: string | string[];
   title: string;
   category: string;
   caption: string;
