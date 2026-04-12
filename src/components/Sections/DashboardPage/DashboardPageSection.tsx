@@ -1,6 +1,6 @@
 import { Clock, Calendar, Hash, Search, Heart, X } from "lucide-react";
 
-import headerAsset from "../../../assets/faq-illustration.svg";
+import headerAsset from "../../../assets/prob2.svg";
 import {
   FacebookIcon,
   InstagramIcon,

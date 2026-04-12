@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import headerAsset from '../../../assets/faq-illustration.svg';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import headerAsset from '../../../assets/prob2.svg';
 import { useScheduleController } from '../../../hooks/useScheduleController';
 import type { ScheduleItem } from '../../../types/schedule';
 import { ToastNotification } from '../../Elements/ToastNotification';
@@ -55,7 +55,7 @@ export default function DraftListSection() {
         return () => clearTimeout(timer);
     }, []);
 
-    const handleEditClick = (draft: ScheduleItem) => {
+    const handleEditClick = useCallback((draft: ScheduleItem) => {
         setEditingId(draft.id);
         
         const rawScheduledTime = draft.scheduled_time || '';
@@ -70,7 +70,7 @@ export default function DraftListSection() {
             date: dateInput, 
             time: timeInput 
         });
-    };
+    }, []);
 
     const handleSaveEdit = async (id: number) => {
         if (!editForm.title.trim()) {
@@ -103,9 +103,9 @@ export default function DraftListSection() {
         }
     };
 
-    const handleCancelEdit = () => setEditingId(null);
+    const handleCancelEdit = useCallback(() => setEditingId(null), []);
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = useCallback(async (id: number) => {
         const isConfirmed = await confirmAction('Hapus Draft?', 'Draft ini akan dihapus permanen dan tidak bisa dikembalikan.', 'Ya, Hapus');
         if (!isConfirmed) return;
         
@@ -120,9 +120,10 @@ export default function DraftListSection() {
             console.error(err);
             showToast("Kesalahan jaringan saat menghapus.", 'error');
         }
-    };
+    }, [deleteSchedule, showToast]);
 
-    const filteredDrafts = drafts.filter((d) => {
+    // useMemo: kalkulasi filter hanya dijalankan ulang jika drafts, searchQuery, atau activePlatform berubah
+    const filteredDrafts = useMemo(() => drafts.filter((d) => {
         const matchesSearch = (d.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                               (d.caption || '').toLowerCase().includes(searchQuery.toLowerCase());
         
@@ -143,7 +144,7 @@ export default function DraftListSection() {
         );
         
         return matchesSearch && matchesPlatform;
-    });
+    }), [drafts, searchQuery, activePlatform]);
 
     return (
         <section className="min-h-screen w-full py-10 md:py-20 px-6 md:px-12 lg:px-16">
@@ -293,9 +294,17 @@ export default function DraftListSection() {
                         ))}
                     </div>
                 ) : filteredDrafts.length === 0 ? (
-                    <div className="text-center py-16">
-                        <p className="text-lg font-bold text-dark/60">
+                    <div className="px-4 py-14 text-center sm:px-6">
+                        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-white/40 bg-white/50 shadow-sm">
+                            <Search className="h-6 w-6 text-[#545454]/35" />
+                        </div>
+                        <h3 className="text-lg font-bold text-dark">
                             {searchQuery ? 'Draft tidak ditemukan.' : 'Belum ada draft.'}
+                        </h3>
+                        <p className="mt-2 text-sm text-dark/60">
+                            {searchQuery
+                                ? `Draft dengan kata kunci "${searchQuery}" tidak ditemukan.`
+                                : 'Draft yang kamu buat akan muncul di sini.'}
                         </p>
                     </div>
                 ) : (

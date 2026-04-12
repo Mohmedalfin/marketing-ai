@@ -15,7 +15,7 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({
     isVisible,
     onClose,
     type = 'error',
-    positionClassName = 'top-20 sm:top-24'
+    positionClassName = 'top-22 sm:top-24'
 }) => {
     if (!isVisible) return null;
 

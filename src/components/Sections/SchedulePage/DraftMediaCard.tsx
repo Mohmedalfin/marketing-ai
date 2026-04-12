@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState, useCallback, memo } from 'react';
 
 interface DraftMediaCardProps {
     isVideo: boolean;
@@ -8,7 +8,8 @@ interface DraftMediaCardProps {
     isEditing: boolean;
 }
 
-export function DraftMediaCard({ isVideo, videoUrl, imageUrl, title, isEditing }: DraftMediaCardProps) {
+// memo: mencegah re-render jika props (isVideo, videoUrl, imageUrl, isEditing) tidak berubah
+export const DraftMediaCard = memo(function DraftMediaCard({ isVideo, videoUrl, imageUrl, title, isEditing }: DraftMediaCardProps) {
     const containerRef  = useRef<HTMLDivElement>(null);
     const srcLoadedRef = useRef(false);
     const videoRef      = useRef<HTMLVideoElement>(null);
@@ -90,4 +91,4 @@ export function DraftMediaCard({ isVideo, videoUrl, imageUrl, title, isEditing }
             )}
         </div>
     );
-}
+});
