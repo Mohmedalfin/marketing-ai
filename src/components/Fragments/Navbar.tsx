@@ -48,7 +48,7 @@ export default function Navbar({ variant = "landing" }: { variant?: string }) {
             <img
               src={logoGambar}
               alt="AiGency Logo"
-              className="h-8 w-auto object-contain"
+              className="h-10 md:h-12 w-auto object-contain"
             />
           </a>
 

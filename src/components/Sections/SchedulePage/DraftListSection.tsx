@@ -157,7 +157,7 @@ export default function DraftListSection() {
                             <img 
                                 src={headerAsset} 
                                 alt="Header Dekorasi" 
-                                className="h-full w-full object-cover" 
+                                className="h-full w-full object-cover md:pb-8" 
                             />
                         </div>
 
@@ -320,8 +320,6 @@ export default function DraftListSection() {
                                         ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}
                                     `}
                                 >
-                                    {/* Media Background — dirender lewat DraftMediaCard
-                                         yang hanya play/load ketika card masuk viewport */}
                                     <DraftMediaCard
                                         isVideo={
                                             (draft.media_type?.toLowerCase() === 'video' ||
@@ -334,9 +332,7 @@ export default function DraftListSection() {
                                         isEditing={isEditing}
                                     />
                                     
-                                    {/* Gradient Overlay untuk teks agar mudah dibaca */}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/5 pointer-events-none" />
-
                                     <div className="relative z-10 w-full h-full flex flex-col justify-end p-4 md:p-5">
                                         
                                         <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-40">

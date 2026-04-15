@@ -24,12 +24,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
-    /* --- TAMBAHAN UNTUK SHADCN --- */
-    "baseUrl": ".",
+    /* Alias */
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"]

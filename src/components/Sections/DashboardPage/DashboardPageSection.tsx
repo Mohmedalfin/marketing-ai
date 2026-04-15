@@ -58,7 +58,7 @@ export default function DashboardPageSection() {
   } = useDashboardController();
 
   return (
-    <section className="w-full px-6 md:px-12 lg:px-16 pb-16 pt-10 font-sans text-[#5C5C5C]">
+    <section className="w-full px-6 md:px-12 lg:px-16 pb-16 py-10 md:py-20 font-sans text-[#5C5C5C]">
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -74,7 +74,7 @@ export default function DashboardPageSection() {
               <img
                 src={headerAsset}
                 alt="Dashboard Dekorasi"
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover md:pb-8"
               />
             </div>
 

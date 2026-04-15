@@ -53,7 +53,9 @@ export const useDashboardController = () => {
                             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
                             dateStr = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
                             timeStr = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
-                        } catch {}
+                        } catch {
+                            // kosong
+                        }
                     }
 
                     let platArr: string[] = [];

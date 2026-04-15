@@ -106,9 +106,7 @@ export default function RegisterFormSection() {
       </style>
 
       <div className="mx-auto w-full max-w-6xl">
-        {/* --- MAIN GRID LAYOUT (Form Kiri, Gambar Kanan) --- */}
         <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-32 xl:gap-40">
-          {/* --- KOLOM KIRI: FORM LOGIN --- */}
           <div
             className={`flex w-full flex-col justify-center transition-all duration-700 delay-200 ease-out lg:max-w-md lg:justify-self-end
                         ${isVisible ? "translate-x-0 opacity-100" : "-translate-x-12 opacity-0"}
@@ -118,7 +116,6 @@ export default function RegisterFormSection() {
               Register
             </h2>
 
-            {/* Step Indicator */}
             <div className="mb-6 mt-4 flex justify-center gap-2">
               <button
                 type="button"
@@ -322,6 +319,9 @@ export default function RegisterFormSection() {
 
             <button
               type="button"
+              onClick={() =>
+                showNotification("Fitur register dengan Google belum diimplementasikan.", "error")
+              }
               className="flex w-full items-center justify-center gap-3 rounded-full border border-primary bg-white py-3 transition-all hover:bg-light-bg focus:outline-hidden"
             >
               <svg viewBox="0 0 24 24" className="h-5 w-5">

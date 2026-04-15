@@ -13,7 +13,7 @@ const FeatureSection = () => {
     // Data Konten Dinamis berdasarkan Tab
     const tabData = {
         'ai-poster': {
-            title: "Sulap Foto Mentah Jadi Poster Profesional",
+            title: "Sulap Foto Mentah Jadi Poster & Video Profesional",
             description: "Tidak Perlu Sewa Desainer Mahal Atau Pusing Memikirkan Layout. Cukup Unggah Foto Produk Anda, Ketik Gaya Yang Diinginkan, Dan Biarkan AI Merancang Visual Memukau Dalam Hitungan Detik.",
             features: ["HAPUS BACKGROUND OTOMATIS", "SESUAIKAN WARNA BRAND"]
         },
@@ -75,7 +75,7 @@ const FeatureSection = () => {
                         ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}
                     `}>
                         {[
-                            { id: 'ai-poster', label: 'AI POSTER' },
+                            { id: 'ai-poster', label: 'AI CONTENT' },
                             { id: 'smart-caption', label: 'SMART CAPTION' },
                             { id: 'auto-schedule', label: 'AUTO SCHEDULE' }
                         ].map((tab) => (

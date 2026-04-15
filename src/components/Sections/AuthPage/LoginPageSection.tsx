@@ -56,14 +56,16 @@ export default function LoginFormSection() {
       setTimeout(() => {
         navigate("/dashboard");
       }, 1500);
-    } catch {}
+    } catch {
+      // 
+    }
   };
 
   return (
     <section
       className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden px-6 py-10 md:px-12 lg:px-16 bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: `url(${bgImage})` }}
-    >
+    > 
       <style>
         {`
                     @keyframes float-login {
@@ -77,7 +79,29 @@ export default function LoginFormSection() {
                 `}
       </style>
 
-      <div className="mx-auto w-full max-w-6xl">
+
+      <div className="mx-auto w-full max-w-6xl"> 
+        <div className="absolute top-6 left-6 z-10">
+          <button
+            onClick={() => navigate("/")}
+            className="flex items-center justify-center rounded-full p-2 text-primary transition-all bg-white/60 hover:text-primary-hover cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
+            aria-label="Kembali"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+        </div> 
+    
         <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-32 xl:gap-40">
           <div
             className={`flex w-full flex-col justify-center transition-all duration-700 delay-200 ease-out lg:max-w-md lg:justify-self-end
@@ -175,6 +199,9 @@ export default function LoginFormSection() {
 
             <button
               type="button"
+              onClick={() =>
+                showNotification("Fitur login dengan Google belum diimplementasikan.", "error")
+              }
               className="flex w-full items-center justify-center gap-3 rounded-full border border-primary bg-white py-3 transition-all hover:bg-light-bg focus:outline-none"
             >
               <svg viewBox="0 0 24 24" className="h-5 w-5">
