@@ -1,6 +1,6 @@
 // src/services/scheduleService.ts
 import { ENV } from "../config/env";
-import type { GetSchedulesResponse } from "../types/schedule";
+import type { GetSchedulesResponse, UpdateSchedulePayload } from "../types/schedule";
 
 export const getSchedulesAPI = async (): Promise<GetSchedulesResponse> => {
   const token = localStorage.getItem('access_token');
@@ -51,7 +51,7 @@ export const getSchedulesAPI = async (): Promise<GetSchedulesResponse> => {
 
 export const updateScheduleAPI = async (
   id: number,
-  payload: { title: string; caption: string; scheduled_time: string }
+  payload: UpdateSchedulePayload
 ) => {
   const token = localStorage.getItem('access_token');
   

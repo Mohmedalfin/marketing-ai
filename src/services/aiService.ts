@@ -47,7 +47,7 @@ export const generatePosterAPI = async (
     }
 
     if (errorMessage === "Not Found" || response.status === 404) {
-      errorMessage = `Endpoint API tidak ditemukan (404) di: ${ENV.API_URL}/api/v1/ai/generate/studio. Pastikan URL-nya sudah benar di backend.`;
+      errorMessage = `Endpoint API tidak ditemukan (404) di: ${ENV.API_URL}/api/v1/generate/studio. Pastikan URL-nya sudah benar di backend.`;
     }
 
     throw new Error(errorMessage);

@@ -254,7 +254,6 @@ export const useAiStudioController = () => {
                 caption: aiStudio.captionText,
                 image_url: isVideo ? '' : (aiStudio.generatedPoster ?? ''),
                 video_url: isVideo ? (aiStudio.generatedVideo ?? '') : '',
-                media_type: formData.mediaType.toLowerCase(),
                 platform: formData.platforms.map(p => p.toLowerCase()),
                 scheduled_time: dateTimeString
             };

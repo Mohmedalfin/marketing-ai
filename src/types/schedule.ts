@@ -16,7 +16,9 @@ export interface ScheduleItem {
 export type GetSchedulesResponse = ScheduleItem[];
 
 export interface UpdateSchedulePayload {
-  title: string;
-  caption: string;
-  scheduled_time: string;
+  title?: string;
+  caption?: string;
+  scheduled_time?: string;
+  status?: string;
+  platform?: string | string[];
 }
