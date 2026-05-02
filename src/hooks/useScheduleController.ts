@@ -91,7 +91,6 @@ export const useScheduleController = () => {
             await deleteScheduleAPI(id);
             return { success: true };
         } catch (err) {
-            // Rollback jika gagal
             setSchedules(originalSchedules);
             const errorMessage = err instanceof Error ? err.message : 'Gagal menghapus data.';
             setError(errorMessage);
