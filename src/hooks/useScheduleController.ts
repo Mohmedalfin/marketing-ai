@@ -61,9 +61,11 @@ export const useScheduleController = () => {
                 if (item.id === id) {
                     return {
                         ...item,
-                        title: payload.title,
-                        caption: payload.caption,
-                        scheduled_time: payload.scheduled_time
+                        title: payload.title ?? item.title,
+                        caption: payload.caption ?? item.caption,
+                        scheduled_time: payload.scheduled_time ?? item.scheduled_time,
+                        status: payload.status ?? item.status,
+                        platform: payload.platform ?? item.platform,
                     };
                 }
                 return item;
